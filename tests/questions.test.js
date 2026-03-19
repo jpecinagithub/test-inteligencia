@@ -2,21 +2,18 @@ import { describe, it, expect } from 'vitest'
 import { questionsPool, TEST_CONFIG } from '../src/data/questions'
 
 describe('questionsPool', () => {
-  it('debe tener exactamente 25 preguntas por área cognitiva', () => {
+  it('debe tener preguntas por cada área', () => {
     const mathQuestions = questionsPool.filter(q => q.area === 'matematica')
     const lingQuestions = questionsPool.filter(q => q.area === 'linguistica')
     const espQuestions = questionsPool.filter(q => q.area === 'espacial')
     const logQuestions = questionsPool.filter(q => q.area === 'logica')
+    const cultQuestions = questionsPool.filter(q => q.area === 'cultura')
     
-    expect(mathQuestions.length).toBe(25)
-    expect(lingQuestions.length).toBe(25)
-    expect(espQuestions.length).toBe(25)
-    expect(logQuestions.length).toBe(25)
-  })
-
-  it('debe tener suficientes preguntas de personalidad', () => {
-    const persQuestions = questionsPool.filter(q => q.area === 'personalidad')
-    expect(persQuestions.length).toBeGreaterThanOrEqual(5)
+    expect(mathQuestions.length).toBeGreaterThanOrEqual(30)
+    expect(lingQuestions.length).toBeGreaterThanOrEqual(30)
+    expect(espQuestions.length).toBeGreaterThanOrEqual(20)
+    expect(logQuestions.length).toBeGreaterThanOrEqual(20)
+    expect(cultQuestions.length).toBeGreaterThanOrEqual(30)
   })
 
   it('cada pregunta debe tener 4 opciones', () => {
@@ -40,7 +37,7 @@ describe('questionsPool', () => {
   })
 
   it('cada pregunta debe tener un área válida', () => {
-    const validAreas = ['matematica', 'linguistica', 'espacial', 'logica', 'personalidad']
+    const validAreas = ['matematica', 'linguistica', 'espacial', 'logica', 'cultura']
     questionsPool.forEach(q => {
       expect(validAreas).toContain(q.area)
     })
@@ -50,16 +47,6 @@ describe('questionsPool', () => {
     questionsPool.forEach(q => {
       expect(q.difficulty).toBeGreaterThanOrEqual(1)
       expect(q.difficulty).toBeLessThanOrEqual(3)
-    })
-  })
-
-  it('preguntas de personalidad deben tener trait definido', () => {
-    const persQuestions = questionsPool.filter(q => q.area === 'personalidad')
-    const validTraits = ['analytical', 'impulsivity', 'persistence', 'pressureTolerance', 'decisionConfidence']
-    
-    persQuestions.forEach(q => {
-      expect(q.trait).toBeDefined()
-      expect(validTraits).toContain(q.trait)
     })
   })
 })
@@ -74,7 +61,7 @@ describe('TEST_CONFIG', () => {
     expect(TEST_CONFIG.questionsPerArea.linguistica).toBe(5)
     expect(TEST_CONFIG.questionsPerArea.espacial).toBe(5)
     expect(TEST_CONFIG.questionsPerArea.logica).toBe(5)
-    expect(TEST_CONFIG.questionsPerArea.personalidad).toBe(5)
+    expect(TEST_CONFIG.questionsPerArea.cultura).toBe(5)
   })
 
   it('debe tener tiempos de advertencia configurados', () => {
@@ -109,23 +96,23 @@ describe('Matemática - Verificación de patrones', () => {
     expect(q.options[q.correctAnswer]).toBe('13')
   })
 
-  it('math_004: 15+27=42', () => {
-    const q = mathQuestions.find(q => q.id === 'math_004')
+  it('math_011: 15+27=42', () => {
+    const q = mathQuestions.find(q => q.id === 'math_011')
     expect(q.options[q.correctAnswer]).toBe('42')
   })
 
-  it('math_005: 3x+7=22 → x=5', () => {
-    const q = mathQuestions.find(q => q.id === 'math_005')
+  it('math_016: 3x+7=22 → x=5', () => {
+    const q = mathQuestions.find(q => q.id === 'math_016')
     expect(q.options[q.correctAnswer]).toBe('5')
   })
 
-  it('math_006: 25% de 80 = 20', () => {
-    const q = mathQuestions.find(q => q.id === 'math_006')
+  it('math_021: 25% de 80 = 20', () => {
+    const q = mathQuestions.find(q => q.id === 'math_021')
     expect(q.options[q.correctAnswer]).toBe('20')
   })
 
-  it('math_007: 200+20%-20% = 192', () => {
-    const q = mathQuestions.find(q => q.id === 'math_007')
+  it('math_023: 200+20%-20% = 192', () => {
+    const q = mathQuestions.find(q => q.id === 'math_023')
     expect(q.options[q.correctAnswer]).toBe('$192')
   })
 })
@@ -133,23 +120,42 @@ describe('Matemática - Verificación de patrones', () => {
 describe('Lógica - Verificación de silogismos', () => {
   const logQuestions = questionsPool.filter(q => q.area === 'logica')
 
-  it('log_002: Modus ponens - si llueve, me quedo', () => {
-    const q = logQuestions.find(q => q.id === 'log_002')
+  it('log_007: Modus ponens - si llueve, me quedo', () => {
+    const q = logQuestions.find(q => q.id === 'log_007')
     expect(q.options[q.correctAnswer]).toContain('Me quedo')
   })
 
-  it('log_006: Ningún reptil vuela, serpientes son reptiles → ninguna serpiente vuela', () => {
-    const q = logQuestions.find(q => q.id === 'log_006')
+  it('log_002: Ningún reptil vuela, serpientes son reptiles → ninguna serpiente vuela', () => {
+    const q = logQuestions.find(q => q.id === 'log_002')
     expect(q.options[q.correctAnswer]).toContain('Ninguna serpiente')
   })
 
-  it('log_007: Si estudio, apruebo. No aprobé → No estudié', () => {
-    const q = logQuestions.find(q => q.id === 'log_007')
+  it('log_008: Si estudio, apruebo. No aprobé → No estudié', () => {
+    const q = logQuestions.find(q => q.id === 'log_008')
     expect(q.options[q.correctAnswer]).toBe('No estudié')
   })
 
-  it('log_015: Quien vive más al sur', () => {
-    const q = logQuestions.find(q => q.id === 'log_015')
+  it('log_014: Quien vive más al sur', () => {
+    const q = logQuestions.find(q => q.id === 'log_014')
     expect(q.options[q.correctAnswer]).toBe('Pedro')
+  })
+})
+
+describe('Cultura General - Verificación', () => {
+  const cultQuestions = questionsPool.filter(q => q.area === 'cultura')
+
+  it('cult_001: planeta más grande - Júpiter', () => {
+    const q = cultQuestions.find(q => q.id === 'cult_001')
+    expect(q.options[q.correctAnswer]).toBe('Júpiter')
+  })
+
+  it('cult_010: Mona Lisa - Da Vinci', () => {
+    const q = cultQuestions.find(q => q.id === 'cult_010')
+    expect(q.options[q.correctAnswer]).toBe('Da Vinci')
+  })
+
+  it('cult_011: llegada a la Luna - 1969', () => {
+    const q = cultQuestions.find(q => q.id === 'cult_011')
+    expect(q.options[q.correctAnswer]).toBe('1969')
   })
 })

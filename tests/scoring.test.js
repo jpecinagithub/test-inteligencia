@@ -11,8 +11,8 @@ describe('calculateScore', () => {
     { id: 'q6', area: 'espacial', correctAnswer: 0 },
     { id: 'q7', area: 'logica', correctAnswer: 1 },
     { id: 'q8', area: 'logica', correctAnswer: 2 },
-    { id: 'q9', area: 'personalidad', correctAnswer: 1 },
-    { id: 'q10', area: 'personalidad', correctAnswer: 2 }
+    { id: 'q9', area: 'cultura', correctAnswer: 1 },
+    { id: 'q10', area: 'cultura', correctAnswer: 2 }
   ]
 
   it('debe retornar 0% cuando no hay respuestas correctas', () => {
@@ -33,13 +33,13 @@ describe('calculateScore', () => {
     expect(result.totalScore).toBe(100)
   })
 
-  it('debe retornar 50% cuando la mitad son correctas', () => {
+  it('debe retornar 40% cuando 4 de 10 son correctas', () => {
     const answers = {
       q1: 1, q2: 0, q3: 0, q4: 0, q5: 0,
       q6: 0, q7: 1, q8: 0, q9: 0, q10: 0
     }
     const result = calculateScore(mockQuestions, answers)
-    expect(result.totalScore).toBe(50)
+    expect(result.totalScore).toBe(40)
   })
 
   it('debe calcular correctamente las puntuaciones por área', () => {
@@ -68,21 +68,6 @@ describe('calculateScore', () => {
     
     expect(result.iqEstimate).toBeGreaterThanOrEqual(75)
     expect(result.iqEstimate).toBeLessThanOrEqual(125)
-  })
-
-  it('debe incluir resumen de personalidad para preguntas de personalidad', () => {
-    const answers = {
-      q1: 1, q2: 2, q3: 0, q4: 1, q5: 3,
-      q6: 0, q7: 1, q8: 2, q9: 1, q10: 2
-    }
-    const result = calculateScore(mockQuestions, answers)
-    
-    expect(result.personalitySummary).toBeDefined()
-    expect(result.personalitySummary).toHaveProperty('analytical')
-    expect(result.personalitySummary).toHaveProperty('impulsivity')
-    expect(result.personalitySummary).toHaveProperty('persistence')
-    expect(result.personalitySummary).toHaveProperty('pressureTolerance')
-    expect(result.personalitySummary).toHaveProperty('decisionConfidence')
   })
 
   it('debe generar mensaje de resumen para puntuación superior', () => {

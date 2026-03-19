@@ -28,13 +28,13 @@ export function TestProvider({ children }) {
   const [questions, setQuestions] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState({})
-  const [timeRemaining, setTimeRemaining] = useState(900)
+  const [timeRemaining, setTimeRemaining] = useState(600)
   const [testStatus, setTestStatus] = useState('idle')
   
-  const TEST_DURATION = 900
+  const TEST_DURATION = 600
 
   const selectRandomQuestions = useCallback(() => {
-    const areas = ['matematica', 'linguistica', 'espacial', 'logica']
+    const areas = ['matematica', 'linguistica', 'espacial', 'logica', 'cultura']
     const selected = []
     
     areas.forEach(area => {
@@ -42,10 +42,6 @@ export function TestProvider({ children }) {
       const shuffled = [...areaQuestions].sort(() => Math.random() - 0.5)
       selected.push(...shuffled.slice(0, 5))
     })
-    
-    const personalityQuestions = questionsPool.filter(q => q.area === 'personalidad')
-    const shuffledPersonality = [...personalityQuestions].sort(() => Math.random() - 0.5)
-    selected.push(...shuffledPersonality.slice(0, 5))
     
     const shuffled = [...selected].sort(() => Math.random() - 0.5)
     return shuffled

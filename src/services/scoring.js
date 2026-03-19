@@ -4,114 +4,59 @@ export function calculateScore(questions, answers) {
     linguistica: { correct: 0, total: 0, percentage: 0 },
     espacial: { correct: 0, total: 0, percentage: 0 },
     logica: { correct: 0, total: 0, percentage: 0 },
-    personalidad: { correct: 0, total: 0 }
+    cultura: { correct: 0, total: 0, percentage: 0 }
   }
 
-  const cognitiveAreas = ['matematica', 'linguistica', 'espacial', 'logica']
+  const cognitiveAreas = ['matematica', 'linguistica', 'espacial', 'logica', 'cultura']
   
-  let totalCognitive = { correct: 0, total: 0 }
+  let totalCorrect = 0
+  let totalQuestions = 0
   
   questions.forEach(question => {
     const { area, correctAnswer, id } = question
     const userAnswer = answers[id]
     
-    if (area === 'personalidad') {
-      areaScores.personalidad.total++
-      if (userAnswer !== undefined && userAnswer !== null) {
-        areaScores.personalidad.correct++
-      }
-    } else {
+    if (areaScores[area]) {
       areaScores[area].total++
-      totalCognitive.total++
+      totalQuestions++
       
       if (userAnswer === correctAnswer) {
         areaScores[area].correct++
-        totalCognitive.correct++
+        totalCorrect++
       }
     }
   })
 
   cognitiveAreas.forEach(area => {
-    if (areaScores[area].total > 0) {
+    if (areaScores[area] && areaScores[area].total > 0) {
       areaScores[area].percentage = Math.round(
         (areaScores[area].correct / areaScores[area].total) * 100
       )
     }
   })
 
-  const totalScore = totalCognitive.total > 0
-    ? Math.round((totalCognitive.correct / totalCognitive.total) * 100)
+  const totalScore = totalQuestions > 0
+    ? Math.round((totalCorrect / totalQuestions) * 100)
     : 0
 
   const iqEstimate = Math.round(75 + (totalScore * 0.5))
 
-  const personalitySummary = calculatePersonalitySummary(
-    questions.filter(q => q.area === 'personalidad'),
-    answers
-  )
-
-  const summary = generateSummary(areaScores, totalScore, personalitySummary)
+  const summary = generateSummary(areaScores, totalScore)
 
   return {
     totalScore,
     iqEstimate,
     areaScores,
-    personalitySummary,
     summary,
     totalQuestions: questions.length,
-    cognitiveCorrect: totalCognitive.correct,
-    cognitiveTotal: totalCognitive.total
+    cognitiveCorrect: totalCorrect,
+    cognitiveTotal: totalQuestions
   }
 }
 
-function calculatePersonalitySummary(personalityQuestions, answers) {
-  const traits = {
-    analytical: [],
-    impulsivity: [],
-    persistence: [],
-    pressureTolerance: [],
-    decisionConfidence: []
-  }
-
-  personalityQuestions.forEach(q => {
-    const answer = answers[q.id]
-    if (answer !== undefined && answer !== null) {
-      if (q.trait) {
-        traits[q.trait].push(answer)
-      }
-    }
-  })
-
-  const average = (arr) => arr.length > 0 
-    ? arr.reduce((a, b) => a + b, 0) / arr.length 
-    : 3
-
-  return {
-    analytical: interpretTrait(average(traits.analytical)),
-    impulsivity: interpretTrait(average(traits.impulsivity), true),
-    persistence: interpretTrait(average(traits.persistence)),
-    pressureTolerance: interpretTrait(average(traits.pressureTolerance)),
-    decisionConfidence: interpretTrait(average(traits.decisionConfidence))
-  }
-}
-
-function interpretTrait(value, invert = false) {
-  const scaledValue = ((value / 3) * 5)
-  
-  if (invert) {
-    if (scaledValue <= 2) return 'Alto'
-    if (scaledValue <= 3.5) return 'Moderado'
-    return 'Bajo'
-  } else {
-    if (scaledValue >= 4) return 'Alto'
-    if (scaledValue >= 2.5) return 'Moderado'
-    return 'Bajo'
-  }
-}
-
-function generateSummary(areaScores, totalScore, personalitySummary) {
+function generateSummary(areaScores, totalScore) {
   const topAreas = Object.entries(areaScores)
-    .filter(([key]) => key !== 'personalidad')
+    .filter(([key, value]) => value.total > 0)
     .sort((a, b) => b[1].percentage - a[1].percentage)
 
   const weakestAreas = [...topAreas].reverse().slice(0, 2)
@@ -120,7 +65,6 @@ function generateSummary(areaScores, totalScore, personalitySummary) {
     overall: '',
     strengths: [],
     improvements: [],
-    profile: '',
     message: ''
   }
 
@@ -154,17 +98,6 @@ function generateSummary(areaScores, totalScore, personalitySummary) {
     }
   })
 
-  const profileDescriptions = []
-  if (personalitySummary.analytical === 'Alto') profileDescriptions.push('analítico')
-  if (personalitySummary.persistence === 'Alto') profileDescriptions.push('persistente')
-  if (personalitySummary.pressureTolerance === 'Alto') profileDescriptions.push('resistente bajo presión')
-  if (personalitySummary.impulsivity === 'Alto') profileDescriptions.push('decisivo rápido')
-  if (personalitySummary.decisionConfidence === 'Alto') profileDescriptions.push('seguro en decisiones')
-
-  summary.profile = profileDescriptions.length > 0
-    ? `Tu perfil muestra tendencias ${profileDescriptions.slice(0, 3).join(', ')}.`
-    : 'Continúa desarrollando tus habilidades cognitivas.'
-
   return summary
 }
 
@@ -173,19 +106,20 @@ function formatAreaName(area) {
     matematica: 'Matemática',
     linguistica: 'Lingüística',
     espacial: 'Espacial',
-    logica: 'Lógica'
+    logica: 'Lógica',
+    cultura: 'Cultura General'
   }
   return names[area] || area
 }
 
 export function generateResultsEmailHTML(results, userName) {
-  const { totalScore, iqEstimate, areaScores, personalitySummary, summary, timeUsed } = results
+  const { totalScore, iqEstimate, areaScores, summary, timeUsed } = results
   
   const minutes = Math.floor(timeUsed / 60)
   const seconds = timeUsed % 60
   
   const areaBars = Object.entries(areaScores)
-    .filter(([key]) => key !== 'personalidad')
+    .filter(([key, value]) => value.total > 0)
     .map(([area, scores]) => `
       <div style="margin: 10px 0;">
         <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
@@ -256,16 +190,6 @@ export function generateResultsEmailHTML(results, userName) {
               <p style="color: #94a3b8; margin: 0; font-size: 14px;">${summary.improvements.join(', ')}</p>
             </div>
           ` : ''}
-          
-          <div style="margin-top: 30px; padding: 20px; background: #0f172a; border-radius: 12px;">
-            <h4 style="color: #fff; margin: 0 0 10px 0; font-size: 14px;">Perfil de Personalidad</h4>
-            <p style="color: #94a3b8; margin: 0; font-size: 14px; line-height: 1.8;">
-              • Orientación analítica: <span style="color: #fff;">${personalitySummary.analytical}</span><br>
-              • Persistencia: <span style="color: #fff;">${personalitySummary.persistence}</span><br>
-              • Tolerancia a presión: <span style="color: #fff;">${personalitySummary.pressureTolerance}</span><br>
-              • Impulsividad: <span style="color: #fff;">${personalitySummary.impulsivity}</span>
-            </p>
-          </div>
           
           <div style="margin-top: 30px; text-align: center; color: #64748b; font-size: 12px;">
             <p style="margin: 0 0 5px 0;">Tiempo utilizado: <strong style="color: #94a3b8;">${minutes}m ${seconds}s</strong></p>

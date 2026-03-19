@@ -33,12 +33,10 @@ export default function Results() {
         totalScore: attempt.finalScore,
         iqEstimate: Math.round(75 + (attempt.finalScore * 0.5)),
         areaScores: attempt.areaScores,
-        personalitySummary: attempt.personalitySummary,
         summary: attempt.resultSummary,
         timeUsed: attempt.timeUsed,
         attemptId: attempt.id,
         finishedAt: attempt.finishedAt?.toDate?.() || new Date(),
-        questionDetails: attempt.questionDetails || [],
         userName: user.displayName
       })
       
@@ -70,7 +68,7 @@ export default function Results() {
     )
   }
 
-  const { totalScore, iqEstimate, areaScores, personalitySummary, summary, timeUsed } = results
+  const { totalScore, iqEstimate, areaScores, summary, timeUsed } = results
   const minutes = Math.floor(timeUsed / 60)
   const seconds = timeUsed % 60
 
@@ -78,7 +76,8 @@ export default function Results() {
     matematica: { name: 'Matemática', icon: '🧮', color: 'secondary' },
     linguistica: { name: 'Lingüística', icon: '📝', color: 'primary' },
     espacial: { name: 'Espacial', icon: '👁️', color: 'warning' },
-    logica: { name: 'Lógica', icon: '🧠', color: 'alert' }
+    logica: { name: 'Lógica', icon: '🧠', color: 'alert' },
+    cultura: { name: 'Cultura', icon: '📚', color: 'purple' }
   }
 
   const getScoreColor = (percentage) => {
@@ -152,7 +151,7 @@ export default function Results() {
           
           <div className="space-y-3 sm:space-y-4">
             {Object.entries(areaScores)
-              .filter(([key]) => key !== 'personalidad')
+              .filter(([key, value]) => value && value.total > 0)
               .map(([area, scores]) => {
                 const info = areaLabels[area] || { name: area, icon: '📊', color: 'gray' }
                 return (
@@ -182,37 +181,6 @@ export default function Results() {
                   </div>
                 )
               })}
-          </div>
-        </div>
-
-        <div className="card mb-4 sm:mb-8 p-3 sm:p-6">
-          <h2 className="text-base sm:text-xl font-semibold text-white mb-4 sm:mb-6 flex items-center gap-2">
-            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-            Personalidad
-          </h2>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
-            {Object.entries(personalitySummary).map(([trait, value]) => (
-              <div key={trait} className={`${getScoreBg(
-                value === 'Alto' ? 80 : value === 'Moderado' ? 50 : 20
-              )} rounded-lg p-2 sm:p-4 text-center`}>
-                <p className="text-gray-400 text-xs sm:text-sm mb-1 capitalize">
-                  {trait === 'analytical' ? 'Analítico' :
-                   trait === 'impulsivity' ? 'Impulsividad' :
-                   trait === 'persistence' ? 'Persistencia' :
-                   trait === 'pressureTolerance' ? 'Tolerancia' :
-                   'Decisión'}
-                </p>
-                <p className={`font-bold text-sm sm:text-base ${
-                  value === 'Alto' ? 'text-secondary' :
-                  value === 'Moderado' ? 'text-warning' : 'text-alert'
-                }`}>
-                  {value}
-                </p>
-              </div>
-            ))}
           </div>
         </div>
 
