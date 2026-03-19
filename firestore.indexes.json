@@ -1,0 +1,23 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "attempts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ascending" },
+        { "fieldPath": "status", "order": "ascending" },
+        { "fieldPath": "startedAt", "order": "descending" }
+      ]
+    },
+    {
+      "collectionGroup": "attempts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ascending" },
+        { "fieldPath": "status", "order": "ascending" },
+        { "fieldPath": "finishedAt", "order": "descending" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

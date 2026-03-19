@@ -1,0 +1,306 @@
+import { useEffect, useState } from 'react'
+import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { useTest } from '../context/TestContext'
+import { sendResultsByEmail } from '../services/api'
+import Loading from '../components/ui/Loading'
+
+export default function Results() {
+  const { attemptId } = useParams()
+  const { user } = useAuth()
+  const { getAttemptById } = useTest()
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(true)
+  const [results, setResults] = useState(null)
+  const [sendingEmail, setSendingEmail] = useState(false)
+  const [emailSent, setEmailSent] = useState(false)
+
+  useEffect(() => {
+    const loadResults = async () => {
+      const attempt = await getAttemptById(attemptId)
+      
+      if (!attempt) {
+        navigate('/dashboard')
+        return
+      }
+
+      if (attempt.userId !== user?.uid) {
+        navigate('/dashboard')
+        return
+      }
+
+      setResults({
+        totalScore: attempt.finalScore,
+        iqEstimate: Math.round(75 + (attempt.finalScore * 0.5)),
+        areaScores: attempt.areaScores,
+        personalitySummary: attempt.personalitySummary,
+        summary: attempt.resultSummary,
+        timeUsed: attempt.timeUsed,
+        attemptId: attempt.id,
+        finishedAt: attempt.finishedAt?.toDate?.() || new Date(),
+        questionDetails: attempt.questionDetails || [],
+        userName: user.displayName
+      })
+      
+      setLoading(false)
+    }
+
+    loadResults()
+  }, [attemptId, user, getAttemptById, navigate])
+
+  const handleSendEmail = async () => {
+    setSendingEmail(true)
+    const result = await sendResultsByEmail(user.email, results)
+    if (result.success) {
+      setEmailSent(true)
+    }
+    setSendingEmail(false)
+  }
+
+  if (loading) return <Loading />
+
+  if (!results) {
+    return (
+      <div className="min-h-screen bg-dark-900 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-white text-xl mb-4">Resultados no encontrados</p>
+          <Link to="/dashboard" className="btn-primary">Volver al panel</Link>
+        </div>
+      </div>
+    )
+  }
+
+  const { totalScore, iqEstimate, areaScores, personalitySummary, summary, timeUsed } = results
+  const minutes = Math.floor(timeUsed / 60)
+  const seconds = timeUsed % 60
+
+  const areaLabels = {
+    matematica: { name: 'Matemática', icon: '🧮', color: 'secondary' },
+    linguistica: { name: 'Lingüística', icon: '📝', color: 'primary' },
+    espacial: { name: 'Espacial', icon: '👁️', color: 'warning' },
+    logica: { name: 'Lógica', icon: '🧠', color: 'alert' }
+  }
+
+  const getScoreColor = (percentage) => {
+    if (percentage >= 80) return 'text-secondary'
+    if (percentage >= 60) return 'text-primary'
+    if (percentage >= 40) return 'text-warning'
+    return 'text-alert'
+  }
+
+  const getScoreBg = (percentage) => {
+    if (percentage >= 80) return 'bg-secondary/20'
+    if (percentage >= 60) return 'bg-primary/20'
+    if (percentage >= 40) return 'bg-warning/20'
+    return 'bg-alert/20'
+  }
+
+  return (
+    <div className="min-h-screen bg-dark-900">
+      <header className="bg-dark-800 border-b border-dark-700">
+        <div className="max-w-4xl mx-auto px-4 py-3 sm:py-4">
+          <Link to="/dashboard" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm sm:text-base">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span className="hidden xs:inline">Volver al panel</span>
+            <span className="xs:hidden">Volver</span>
+          </Link>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">¡Test Completado!</h1>
+          <p className="text-gray-400 text-sm sm:text-base">
+            {results.finishedAt.toLocaleDateString('es-ES', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8">
+          <div className="card text-center p-3 sm:p-4">
+            <div className="text-3xl sm:text-5xl font-bold text-primary mb-1 sm:mb-2">{totalScore}%</div>
+            <p className="text-gray-400 text-xs sm:text-sm">Total</p>
+          </div>
+          
+          <div className="card text-center p-3 sm:p-4">
+            <div className="text-3xl sm:text-5xl font-bold text-secondary mb-1 sm:mb-2">{iqEstimate}</div>
+            <p className="text-gray-400 text-xs sm:text-sm">CI</p>
+          </div>
+          
+          <div className="card text-center p-3 sm:p-4">
+            <div className="text-2xl sm:text-4xl font-bold text-warning mb-1 sm:mb-2">
+              {minutes}<span className="text-base sm:text-xl">m</span> {seconds}<span className="text-base sm:text-xl">s</span>
+            </div>
+            <p className="text-gray-400 text-xs sm:text-sm">Tiempo</p>
+          </div>
+        </div>
+
+        <div className="card mb-4 sm:mb-8 p-3 sm:p-6">
+          <h2 className="text-base sm:text-xl font-semibold text-white mb-4 sm:mb-6 flex items-center gap-2">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Rendimiento
+          </h2>
+          
+          <div className="space-y-3 sm:space-y-4">
+            {Object.entries(areaScores)
+              .filter(([key]) => key !== 'personalidad')
+              .map(([area, scores]) => {
+                const info = areaLabels[area] || { name: area, icon: '📊', color: 'gray' }
+                return (
+                  <div key={area} className="bg-dark-700/50 rounded-lg p-2 sm:p-4">
+                    <div className="flex items-center justify-between mb-1 sm:mb-2">
+                      <div className="flex items-center gap-1 sm:gap-2">
+                        <span className="text-sm sm:text-base">{info.icon}</span>
+                        <span className="text-white font-medium text-sm sm:text-base">{info.name}</span>
+                      </div>
+                      <span className={`font-bold text-sm sm:text-base ${getScoreColor(scores.percentage)}`}>
+                        {scores.percentage}%
+                      </span>
+                    </div>
+                    <div className="h-1.5 sm:h-2 bg-dark-600 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-1000 ${
+                          scores.percentage >= 80 ? 'bg-secondary' :
+                          scores.percentage >= 60 ? 'bg-primary' :
+                          scores.percentage >= 40 ? 'bg-warning' : 'bg-alert'
+                        }`}
+                        style={{ width: `${scores.percentage}%` }}
+                      />
+                    </div>
+                    <p className="text-gray-500 text-xs mt-1 hidden sm:block">
+                      {scores.correct} de {scores.total} correctas
+                    </p>
+                  </div>
+                )
+              })}
+          </div>
+        </div>
+
+        <div className="card mb-4 sm:mb-8 p-3 sm:p-6">
+          <h2 className="text-base sm:text-xl font-semibold text-white mb-4 sm:mb-6 flex items-center gap-2">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            Personalidad
+          </h2>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+            {Object.entries(personalitySummary).map(([trait, value]) => (
+              <div key={trait} className={`${getScoreBg(
+                value === 'Alto' ? 80 : value === 'Moderado' ? 50 : 20
+              )} rounded-lg p-2 sm:p-4 text-center`}>
+                <p className="text-gray-400 text-xs sm:text-sm mb-1 capitalize">
+                  {trait === 'analytical' ? 'Analítico' :
+                   trait === 'impulsivity' ? 'Impulsividad' :
+                   trait === 'persistence' ? 'Persistencia' :
+                   trait === 'pressureTolerance' ? 'Tolerancia' :
+                   'Decisión'}
+                </p>
+                <p className={`font-bold text-sm sm:text-base ${
+                  value === 'Alto' ? 'text-secondary' :
+                  value === 'Moderado' ? 'text-warning' : 'text-alert'
+                }`}>
+                  {value}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="card mb-4 sm:mb-8 p-3 sm:p-6">
+          <h2 className="text-base sm:text-xl font-semibold text-white mb-3 sm:mb-4">Análisis</h2>
+          
+          <div className="bg-dark-700/50 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
+            <span className={`inline-block px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium mb-2 sm:mb-3 ${
+              totalScore >= 75 ? 'bg-secondary/20 text-secondary' :
+              totalScore >= 50 ? 'bg-warning/20 text-warning' : 'bg-alert/20 text-alert'
+            }`}>
+              {summary?.overall || 'Completado'}
+            </span>
+            <p className="text-gray-300 text-sm sm:text-base">{summary?.message}</p>
+          </div>
+
+          {summary?.strengths?.length > 0 && (
+            <div className="bg-secondary/10 border border-secondary/30 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
+              <h3 className="text-secondary font-medium mb-1 sm:mb-2 flex items-center gap-2 text-sm sm:text-base">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Fortalezas
+              </h3>
+              <p className="text-gray-300 text-sm">{summary.strengths.join(', ')}</p>
+            </div>
+          )}
+
+          {summary?.improvements?.length > 0 && (
+            <div className="bg-warning/10 border border-warning/30 rounded-lg p-3 sm:p-4">
+              <h3 className="text-warning font-medium mb-1 sm:mb-2 flex items-center gap-2 text-sm sm:text-base">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                Áreas de Mejora
+              </h3>
+              <p className="text-gray-300 text-sm">{summary.improvements.join(', ')}</p>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <button
+            onClick={handleSendEmail}
+            disabled={sendingEmail || emailSent}
+            className={`flex-1 btn-primary flex items-center justify-center gap-2 py-3 sm:py-4 text-sm sm:text-base ${
+              emailSent ? 'bg-secondary hover:bg-secondary' : ''
+            }`}
+          >
+            {sendingEmail ? (
+              <>
+                <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Enviando...
+              </>
+            ) : emailSent ? (
+              <>
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Enviado
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Enviar por email
+              </>
+            )}
+          </button>
+          
+          <Link to="/pre-test" className="btn-secondary flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 text-sm sm:text-base">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Repetir Test
+          </Link>
+        </div>
+      </main>
+
+      <footer className="py-6 sm:py-8 px-4 border-t border-dark-700 mt-4 sm:mt-8">
+        <div className="max-w-4xl mx-auto text-center text-gray-500 text-xs sm:text-sm">
+          <p>Este test es una herramienta informativa y no constituye un diagnóstico profesional.</p>
+        </div>
+      </footer>
+    </div>
+  )
+}
