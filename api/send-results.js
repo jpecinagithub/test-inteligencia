@@ -2,28 +2,28 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+function formatAreaName(area) {
+  const names = {
+    matematica: 'Matemática',
+    linguistica: 'Lingüística',
+    espacial: 'Espacial',
+    logica: 'Lógica'
+  }
+  return names[area] || area
+}
+
+function getScoreColor(percentage) {
+  if (percentage >= 80) return '#10b981'
+  if (percentage >= 60) return '#3b82f6'
+  if (percentage >= 40) return '#f59e0b'
+  return '#ef4444'
+}
+
 function generateResultsEmailHTML(results, userName) {
-  const { totalScore, iqEstimate, areaScores, personalitySummary, summary, timeUsed } = results
+  const { totalScore, iqEstimate, areaScores, personalitySummary, summary, timeUsed, questionDetails } = results
   
   const minutes = Math.floor(timeUsed / 60)
   const seconds = timeUsed % 60
-  
-  const formatAreaName = (area) => {
-    const names = {
-      matematica: 'Matemática',
-      linguistica: 'Lingüística',
-      espacial: 'Espacial',
-      logica: 'Lógica'
-    }
-    return names[area] || area
-  }
-
-  const getScoreColor = (percentage) => {
-    if (percentage >= 80) return '#10b981'
-    if (percentage >= 60) return '#3b82f6'
-    if (percentage >= 40) return '#f59e0b'
-    return '#ef4444'
-  }
   
   const areaBars = Object.entries(areaScores)
     .filter(([key]) => key !== 'personalidad')
@@ -38,6 +38,46 @@ function generateResultsEmailHTML(results, userName) {
         </div>
       </div>
     `).join('')
+
+  const questionsHTML = questionDetails && questionDetails.length > 0 
+    ? questionDetails.map((q, index) => {
+        const userAnswerIndex = q.userAnswer
+        const correctAnswerIndex = q.correctAnswer
+        const userAnswer = q.options?.[userAnswerIndex] || 'No respondida'
+        const correctAnswer = q.options?.[correctAnswerIndex] || 'N/A'
+        const isCorrect = q.isCorrect
+        
+        return `
+          <div style="margin-bottom: 24px; padding: 16px; background: #0f172a; border-radius: 8px; border-left: 4px solid ${isCorrect ? '#10b981' : '#ef4444'};">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <span style="background: ${isCorrect ? '#10b981' : '#ef4444'}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                ${isCorrect ? '✓ Correcta' : '✗ Incorrecta'}
+              </span>
+              <span style="color: #64748b; font-size: 12px;">${formatAreaName(q.area)}</span>
+            </div>
+            <p style="color: #fff; font-size: 14px; margin: 0 0 12px 0; line-height: 1.6;">
+              <strong>Pregunta ${index + 1}:</strong> ${q.prompt}
+            </p>
+            <div style="margin-bottom: 8px;">
+              <span style="color: #94a3b8; font-size: 12px;">Tu respuesta:</span>
+              <span style="color: ${isCorrect ? '#10b981' : '#ef4444'}; font-size: 13px; margin-left: 8px;">${userAnswer}</span>
+            </div>
+            ${!isCorrect ? `
+              <div style="margin-bottom: 8px;">
+                <span style="color: #94a3b8; font-size: 12px;">Respuesta correcta:</span>
+                <span style="color: #10b981; font-size: 13px; margin-left: 8px;">${correctAnswer}</span>
+              </div>
+            ` : ''}
+            ${q.explanation ? `
+              <div style="margin-top: 12px; padding: 12px; background: #1e293b; border-radius: 6px;">
+                <span style="color: #3b82f6; font-size: 12px; font-weight: 600;">Explicación:</span>
+                <p style="color: #94a3b8; font-size: 13px; margin: 4px 0 0 0; line-height: 1.5;">${q.explanation}</p>
+              </div>
+            ` : ''}
+          </div>
+        `
+      }).join('')
+    : '<p style="color: #94a3b8;">No se encontraron detalles de las preguntas.</p>'
 
   return `
     <!DOCTYPE html>
@@ -56,7 +96,7 @@ function generateResultsEmailHTML(results, userName) {
         <div style="padding: 40px;">
           <p style="margin: 0 0 20px 0; color: #94a3b8;">Hola <strong style="color: #fff;">${userName}</strong>,</p>
           <p style="margin: 0 0 30px 0; color: #94a3b8; line-height: 1.6;">
-            Has completado el test de inteligencia. A continuación encontrarás tu puntuación total y el desglose por áreas cognitivas.
+            Has completado el test de inteligencia. A continuación encontrarás tu puntuación total, el desglose por áreas y el análisis detallado de cada pregunta.
           </p>
           
           <div style="display: flex; gap: 20px; margin-bottom: 30px;">
@@ -106,6 +146,13 @@ function generateResultsEmailHTML(results, userName) {
               • Tolerancia a presión: <span style="color: #fff;">${personalitySummary.pressureTolerance}</span><br>
               • Impulsividad: <span style="color: #fff;">${personalitySummary.impulsivity}</span>
             </p>
+          </div>
+          
+          <div style="margin-top: 40px;">
+            <h2 style="color: #fff; font-size: 20px; margin: 0 0 20px 0; border-bottom: 1px solid #334155; padding-bottom: 10px;">
+              Análisis Detallado de Preguntas
+            </h2>
+            ${questionsHTML}
           </div>
           
           <div style="margin-top: 30px; text-align: center; color: #64748b; font-size: 12px;">
