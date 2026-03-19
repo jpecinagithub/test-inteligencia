@@ -473,15 +473,6 @@ export const questionsPool = [
     options: ['aire', 'casa', 'viento', 'torre'],
     correctAnswer: 2
   },
-  {
-    id: 'ling_010',
-    area: 'linguistica',
-    subarea: 'analogias',
-    difficulty: 2,
-    prompt: 'Cuchillo es a cortar como cubo es a ___',
-    options: ['llenar', 'agua', 'contenedor', 'hielo'],
-    correctAnswer: 2
-  },
 
   // Sinónimos
   {
@@ -832,9 +823,9 @@ export const questionsPool = [
     id: 'esp_007',
     area: 'espacial',
     subarea: 'secuencias',
-    difficulty: 3,
-    prompt: 'Patrón: ★☆★☆☆★☆☆☆★☆☆☆ ?',
-    options: ['★', '☆', '■', '□'],
+    difficulty: 2,
+    prompt: 'Observa el patrón: ▲○●▲○●▲○●. ¿Qué viene después?',
+    options: ['●', '▲', '○', '■'],
     correctAnswer: 0
   },
 
@@ -964,8 +955,8 @@ export const questionsPool = [
     id: 'esp_021',
     area: 'espacial',
     subarea: 'contar',
-    difficulty: 3,
-    prompt: 'Si складываешь un papel 3 veces, ¿cuántas capas tendrás?',
+    difficulty: 2,
+    prompt: 'Si doblas un papel 3 veces sobre sí mismo, ¿cuántas capas tendrás?',
     options: ['6', '8', '9', '12'],
     correctAnswer: 1
   },
@@ -985,7 +976,7 @@ export const questionsPool = [
     area: 'espacial',
     subarea: 'perspectiva',
     difficulty: 2,
-    prompt: 'Si拼接 3 cubos en línea, ¿cuántas caras totales tiene el objeto?',
+    prompt: 'Si unes 3 cubos en línea, ¿cuántas caras visibles tiene el objeto en total?',
     options: ['14', '16', '18', '20'],
     correctAnswer: 2
   },
@@ -1013,8 +1004,8 @@ export const questionsPool = [
     id: 'esp_026',
     area: 'espacial',
     subarea: 'matrices',
-    difficulty: 3,
-    prompt: 'En una secuencia, si ★★ = 4 y ★★★ = 9, ¿cuánto es ★★★★?',
+    difficulty: 2,
+    prompt: 'Si cada ● representa un punto y ●● = 4 (área del cuadrado), ●●● = 9, ¿cuánto es ●●●●?',
     options: ['12', '14', '16', '18'],
     correctAnswer: 2
   },
@@ -1022,8 +1013,8 @@ export const questionsPool = [
     id: 'esp_027',
     area: 'espacial',
     subarea: 'matrices',
-    difficulty: 3,
-    prompt: 'Si 1=3, 2=3, 3=5, 4=4, 5=4, ¿a qué es igual 6?',
+    difficulty: 2,
+    prompt: '¿Cuántas letras tiene la palabra "SEIS"?',
     options: ['3', '4', '5', '6'],
     correctAnswer: 1
   },
@@ -1032,8 +1023,8 @@ export const questionsPool = [
     area: 'espacial',
     subarea: 'matrices',
     difficulty: 2,
-    prompt: 'En una matriz, si A→B y C→D, y B→C, ¿qué es D?',
-    options: ['A', 'B', 'C', 'E'],
+    prompt: 'Si A es la primera letra y D es la cuarta, ¿qué letra está entre B y C?',
+    options: ['B', 'C', 'B o C', 'No hay letra'],
     correctAnswer: 0
   },
 

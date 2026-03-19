@@ -14,6 +14,7 @@ export default function Results() {
   const [results, setResults] = useState(null)
   const [sendingEmail, setSendingEmail] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
+  const [showDetails, setShowDetails] = useState(false)
 
   useEffect(() => {
     const loadResults = async () => {
@@ -21,19 +22,16 @@ export default function Results() {
         const attempt = await getAttemptById(attemptId)
         
         if (!attempt) {
-          console.error('Attempt not found:', attemptId)
           navigate('/dashboard')
           return
         }
 
         if (user && attempt.userId !== user.uid) {
-          console.error('User mismatch:', attempt.userId, 'vs', user.uid)
           navigate('/dashboard')
           return
         }
 
         if (attempt.finalScore === null || attempt.finalScore === undefined) {
-          console.error('Final score is null:', attempt)
           navigate('/dashboard')
           return
         }
@@ -46,7 +44,8 @@ export default function Results() {
           timeUsed: attempt.timeUsed,
           attemptId: attempt.id,
           finishedAt: attempt.finishedAt?.toDate?.() || new Date(),
-          userName: user?.displayName || 'Usuario'
+          userName: user?.displayName || 'Usuario',
+          questionDetails: attempt.questionDetails || []
         })
       } catch (error) {
         console.error('Error loading results:', error)
@@ -81,7 +80,7 @@ export default function Results() {
     )
   }
 
-  const { totalScore, iqEstimate, areaScores, summary, timeUsed } = results
+  const { totalScore, iqEstimate, areaScores, summary, timeUsed, questionDetails } = results
   const minutes = Math.floor(timeUsed / 60)
   const seconds = timeUsed % 60
 
@@ -232,6 +231,93 @@ export default function Results() {
               </h3>
               <p className="text-gray-300 text-sm">{summary.improvements.join(', ')}</p>
             </div>
+          )}
+        </div>
+
+        <div className="card mb-4 sm:mb-8 p-3 sm:p-6">
+          <button
+            onClick={() => setShowDetails(!showDetails)}
+            className="w-full flex items-center justify-between text-left"
+          >
+            <h2 className="text-base sm:text-xl font-semibold text-white flex items-center gap-2">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              Revisar Preguntas
+            </h2>
+            <svg 
+              className={`w-5 h-5 text-gray-400 transition-transform ${showDetails ? 'rotate-180' : ''}`} 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          
+          {showDetails && questionDetails && questionDetails.length > 0 && (
+            <div className="mt-4 space-y-4">
+              {questionDetails.map((q, index) => {
+                const areaInfo = areaLabels[q.area] || { name: q.area, icon: '📊' }
+                const userAnswerIndex = q.userAnswer
+                const isCorrect = q.isCorrect
+                
+                return (
+                  <div 
+                    key={q.id} 
+                    className={`bg-dark-700/50 rounded-lg p-3 sm:p-4 border-l-4 ${
+                      isCorrect ? 'border-secondary' : 'border-alert'
+                    }`}
+                  >
+                    <div className="flex items-start gap-2 mb-2">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-dark-600 flex items-center justify-center text-xs text-gray-400">
+                        {index + 1}
+                      </span>
+                      <span className="text-xs text-gray-500">{areaInfo.icon} {areaInfo.name}</span>
+                      <span className={`ml-auto text-xs font-medium px-2 py-0.5 rounded ${
+                        isCorrect 
+                          ? 'bg-secondary/20 text-secondary' 
+                          : 'bg-alert/20 text-alert'
+                      }`}>
+                        {isCorrect ? '✓ Correcta' : '✗ Incorrecta'}
+                      </span>
+                    </div>
+                    
+                    <p className="text-white text-sm sm:text-base mb-3">{q.prompt}</p>
+                    
+                    <div className="space-y-2 text-xs sm:text-sm">
+                      <div className="flex items-start gap-2">
+                        <span className="text-gray-500 min-w-[80px]">Tu respuesta:</span>
+                        <span className={isCorrect ? 'text-secondary' : 'text-alert'}>
+                          {userAnswerIndex !== undefined && q.options[userAnswerIndex] 
+                            ? q.options[userAnswerIndex] 
+                            : 'Sin responder'}
+                        </span>
+                      </div>
+                      
+                      {!isCorrect && (
+                        <div className="flex items-start gap-2">
+                          <span className="text-gray-500 min-w-[80px]">Correcta:</span>
+                          <span className="text-secondary">
+                            {q.options[q.correctAnswer]}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {q.explanation && (
+                        <div className="mt-2 p-2 bg-dark-800/50 rounded text-gray-400 text-xs">
+                          💡 {q.explanation}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+          
+          {showDetails && (!questionDetails || questionDetails.length === 0) && (
+            <p className="mt-4 text-gray-400 text-sm">No hay detalles disponibles.</p>
           )}
         </div>
 

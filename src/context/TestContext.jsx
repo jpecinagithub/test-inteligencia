@@ -166,10 +166,25 @@ export function TestProvider({ children }) {
     const attemptId = currentAttempt.id
     const userEmail = user?.email || 'unknown@example.com'
     const userName = user?.displayName || 'Usuario'
-
+    
+    const result = calculateScore(questions, answers)
+    
+    const cleanUndefined = (obj) => {
+      if (obj === null || obj === undefined) return obj
+      if (typeof obj !== 'object') return obj
+      if (Array.isArray(obj)) {
+        return obj.map(item => cleanUndefined(item))
+      }
+      const cleaned = {}
+      Object.entries(obj).forEach(([key, value]) => {
+        if (value !== undefined) {
+          cleaned[key] = cleanUndefined(value)
+        }
+      })
+      return cleaned
+    }
+    
     try {
-      const result = calculateScore(questions, answers)
-      
       const questionDetails = questions.map(q => ({
         id: q.id,
         area: q.area,
@@ -181,18 +196,21 @@ export function TestProvider({ children }) {
         explanation: q.explanation || 'No hay explicación disponible.'
       }))
       
-      await updateDoc(doc(db, 'attempts', attemptId), {
+      const updateData = {
         status: 'completed',
         finishedAt: serverTimestamp(),
         answers,
         questionDetails,
         finalScore: result.totalScore,
         areaScores: result.areaScores,
-        personalitySummary: result.personalitySummary,
         resultSummary: result.summary,
         timeUsed: TEST_DURATION - timeRemaining,
         updatedAt: serverTimestamp()
-      })
+      }
+      
+      const cleanedUpdateData = cleanUndefined(updateData)
+      
+      await updateDoc(doc(db, 'attempts', attemptId), cleanedUpdateData)
 
       setTestStatus('completed')
 
