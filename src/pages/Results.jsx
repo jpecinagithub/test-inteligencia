@@ -17,28 +17,41 @@ export default function Results() {
 
   useEffect(() => {
     const loadResults = async () => {
-      const attempt = await getAttemptById(attemptId)
-      
-      if (!attempt) {
-        navigate('/dashboard')
-        return
-      }
+      try {
+        const attempt = await getAttemptById(attemptId)
+        
+        if (!attempt) {
+          console.error('Attempt not found:', attemptId)
+          navigate('/dashboard')
+          return
+        }
 
-      if (attempt.userId !== user?.uid) {
-        navigate('/dashboard')
-        return
-      }
+        if (user && attempt.userId !== user.uid) {
+          console.error('User mismatch:', attempt.userId, 'vs', user.uid)
+          navigate('/dashboard')
+          return
+        }
 
-      setResults({
-        totalScore: attempt.finalScore,
-        iqEstimate: Math.round(75 + (attempt.finalScore * 0.5)),
-        areaScores: attempt.areaScores,
-        summary: attempt.resultSummary,
-        timeUsed: attempt.timeUsed,
-        attemptId: attempt.id,
-        finishedAt: attempt.finishedAt?.toDate?.() || new Date(),
-        userName: user.displayName
-      })
+        if (attempt.finalScore === null || attempt.finalScore === undefined) {
+          console.error('Final score is null:', attempt)
+          navigate('/dashboard')
+          return
+        }
+
+        setResults({
+          totalScore: attempt.finalScore,
+          iqEstimate: Math.round(75 + (attempt.finalScore * 0.5)),
+          areaScores: attempt.areaScores,
+          summary: attempt.resultSummary,
+          timeUsed: attempt.timeUsed,
+          attemptId: attempt.id,
+          finishedAt: attempt.finishedAt?.toDate?.() || new Date(),
+          userName: user?.displayName || 'Usuario'
+        })
+      } catch (error) {
+        console.error('Error loading results:', error)
+        navigate('/dashboard')
+      }
       
       setLoading(false)
     }

@@ -77,9 +77,10 @@ export default function Test() {
     
     const result = await finishTest()
     
-    if (result) {
+    if (result?.attemptId) {
       navigate(`/results/${result.attemptId}`)
     } else {
+      console.error('Error finishing test:', result?.error)
       navigate('/dashboard')
     }
   }, [finishTest, navigate, finishing])

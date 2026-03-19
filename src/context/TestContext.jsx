@@ -158,7 +158,14 @@ export function TestProvider({ children }) {
   }, [answers, currentAttempt, timeRemaining])
 
   const finishTest = useCallback(async () => {
-    if (!currentAttempt || !user) return null
+    if (!currentAttempt) {
+      console.error('No hay intento activo')
+      return null
+    }
+
+    const attemptId = currentAttempt.id
+    const userEmail = user?.email || 'unknown@example.com'
+    const userName = user?.displayName || 'Usuario'
 
     try {
       const result = calculateScore(questions, answers)
@@ -174,7 +181,7 @@ export function TestProvider({ children }) {
         explanation: q.explanation || 'No hay explicación disponible.'
       }))
       
-      await updateDoc(doc(db, 'attempts', currentAttempt.id), {
+      await updateDoc(doc(db, 'attempts', attemptId), {
         status: 'completed',
         finishedAt: serverTimestamp(),
         answers,
@@ -191,15 +198,15 @@ export function TestProvider({ children }) {
 
       return {
         ...result,
-        attemptId: currentAttempt.id,
+        attemptId,
         timeUsed: TEST_DURATION - timeRemaining,
         questionDetails,
-        userEmail: user.email,
-        userName: user.displayName
+        userEmail,
+        userName
       }
     } catch (error) {
       console.error('Error al finalizar test:', error)
-      return null
+      return { attemptId, error: error.message }
     }
   }, [currentAttempt, questions, answers, timeRemaining, user])
 
