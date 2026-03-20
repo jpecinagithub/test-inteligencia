@@ -284,7 +284,7 @@ export const questionsPool = [
     difficulty: 2,
     prompt: 'Si hoy es lunes, ¿qué día será dentro de 100 días?',
     options: ['Miércoles', 'Jueves', 'Viernes', 'Domingo'],
-    correctAnswer: 1
+    correctAnswer: 0
   },
   {
     id: 'math_032',
@@ -390,6 +390,53 @@ export const questionsPool = [
     correctAnswer: 2
   },
 
+  // Álgebra y combinatoria
+  {
+    id: 'math_043',
+    area: 'matematica',
+    subarea: 'series',
+    difficulty: 1,
+    prompt: 'Completa la serie alternada: 7, 10, 8, 11, 9, 12, ___',
+    options: ['10', '11', '13', '14'],
+    correctAnswer: 0
+  },
+  {
+    id: 'math_044',
+    area: 'matematica',
+    subarea: 'operaciones',
+    difficulty: 2,
+    prompt: 'Si 2x - 5 = 3x/2, ¿cuánto vale x?',
+    options: ['6', '8', '10', '12'],
+    correctAnswer: 2
+  },
+  {
+    id: 'math_045',
+    area: 'matematica',
+    subarea: 'porcentajes',
+    difficulty: 2,
+    prompt: 'Un precio aumenta 15% y luego baja 10%. Si el precio final es $207, ¿cuál era el precio original?',
+    options: ['$190', '$195', '$200', '$210'],
+    correctAnswer: 2
+  },
+  {
+    id: 'math_046',
+    area: 'matematica',
+    subarea: 'geometria',
+    difficulty: 3,
+    prompt: '¿Cuántas diagonales tiene un polígono de 10 lados?',
+    options: ['20', '25', '35', '40'],
+    correctAnswer: 2
+  },
+  {
+    id: 'math_047',
+    area: 'matematica',
+    subarea: 'problemas',
+    difficulty: 3,
+    prompt: 'Un tanque se llena en 6 h con el tubo A y en 4 h con el tubo B. ¿Cuánto tardan ambos juntos?',
+    options: ['2 h', '2 h 24 min', '3 h', '3 h 20 min'],
+    correctAnswer: 1
+  },
+
   // ============ LINGÜÍSTICA ============
   // Analogías
   {
@@ -399,7 +446,7 @@ export const questionsPool = [
     difficulty: 1,
     prompt: 'Perro es a camada como gato es a ___',
     options: ['manada', 'camada', 'niñada', 'piara'],
-    correctAnswer: 2
+    correctAnswer: 1
   },
   {
     id: 'ling_002',
@@ -424,9 +471,9 @@ export const questionsPool = [
     area: 'linguistica',
     subarea: 'analogias',
     difficulty: 2,
-    prompt: 'Dedo es a mano como hoja es a ___',
+    prompt: 'Dedo es a mano como hoja (de árbol) es a ___',
     options: ['árbol', 'libro', 'flor', 'rama'],
-    correctAnswer: 1
+    correctAnswer: 0
   },
   {
     id: 'ling_005',
@@ -763,6 +810,53 @@ export const questionsPool = [
     correctAnswer: 0
   },
 
+  // Profundización lingüística
+  {
+    id: 'ling_042',
+    area: 'linguistica',
+    subarea: 'analogias',
+    difficulty: 1,
+    prompt: 'Semilla es a árbol como huevo es a ___',
+    options: ['nido', 'ave', 'cáscara', 'pluma'],
+    correctAnswer: 1
+  },
+  {
+    id: 'ling_043',
+    area: 'linguistica',
+    subarea: 'sinonimos',
+    difficulty: 2,
+    prompt: '¿Cuál es un sinónimo de "parco" (en el habla)?',
+    options: ['Lacónico', 'Verboso', 'Inseguro', 'Confuso'],
+    correctAnswer: 0
+  },
+  {
+    id: 'ling_044',
+    area: 'linguistica',
+    subarea: 'antonimos',
+    difficulty: 2,
+    prompt: '¿Cuál es el antónimo de "benévolo"?',
+    options: ['Compasivo', 'Afable', 'Cruel', 'Generoso'],
+    correctAnswer: 2
+  },
+  {
+    id: 'ling_045',
+    area: 'linguistica',
+    subarea: 'analogias',
+    difficulty: 3,
+    prompt: 'Epitafio es a tumba como epígrafe es a ___',
+    options: ['libro', 'escultura', 'firma', 'música'],
+    correctAnswer: 0
+  },
+  {
+    id: 'ling_046',
+    area: 'linguistica',
+    subarea: 'comprension',
+    difficulty: 3,
+    prompt: 'Si alguien "da por sentado" algo, significa que:',
+    options: ['Lo discute', 'Lo considera cierto sin comprobar', 'Lo olvida', 'Lo niega'],
+    correctAnswer: 1
+  },
+
   // ============ ESPACIAL / VISUAL ============
   // Secuencias de figuras
   {
@@ -1028,6 +1122,53 @@ export const questionsPool = [
     correctAnswer: 0
   },
 
+  // Profundización espacial
+  {
+    id: 'esp_029',
+    area: 'espacial',
+    subarea: 'perspectiva',
+    difficulty: 1,
+    prompt: 'Desde una esquina de un cubo, ¿cuántas caras se ven a la vez?',
+    options: ['1', '2', '3', '4'],
+    correctAnswer: 2
+  },
+  {
+    id: 'esp_030',
+    area: 'espacial',
+    subarea: 'contar',
+    difficulty: 2,
+    prompt: 'En una cuadrícula 4x4, ¿cuántos cuadrados hay en total (de todos los tamaños)?',
+    options: ['16', '20', '30', '40'],
+    correctAnswer: 2
+  },
+  {
+    id: 'esp_031',
+    area: 'espacial',
+    subarea: 'perspectiva',
+    difficulty: 2,
+    prompt: '¿Cuántas diagonales espaciales tiene un cubo?',
+    options: ['2', '4', '6', '8'],
+    correctAnswer: 1
+  },
+  {
+    id: 'esp_032',
+    area: 'espacial',
+    subarea: 'perspectiva',
+    difficulty: 3,
+    prompt: 'Un cubo 4×4×4 se pinta por fuera y se corta en cubitos. ¿Cuántos cubitos tienen exactamente 2 caras pintadas?',
+    options: ['16', '24', '32', '48'],
+    correctAnswer: 1
+  },
+  {
+    id: 'esp_033',
+    area: 'espacial',
+    subarea: 'contar',
+    difficulty: 3,
+    prompt: 'En una cuadrícula 5x5, ¿cuántos rectángulos hay en total (incluyendo cuadrados)?',
+    options: ['100', '150', '200', '225'],
+    correctAnswer: 3
+  },
+
   // ============ LÓGICA ============
   // Silogismos
   {
@@ -1136,8 +1277,8 @@ export const questionsPool = [
     area: 'logica',
     subarea: 'condicional',
     difficulty: 3,
-    prompt: 'Si A>B y B>C, ¿todos los A son C?',
-    options: ['Sí', 'No', 'Solo algunos', 'Depende'],
+    prompt: 'Si A > B y B > C, ¿qué se concluye?',
+    options: ['A > C', 'A < C', 'A = C', 'No se puede determinar'],
     correctAnswer: 0
   },
 
@@ -1158,7 +1299,7 @@ export const questionsPool = [
     difficulty: 2,
     prompt: 'Pedro vive más al norte que Juan. Juan vive más al norte que María. ¿Quién vive más al sur?',
     options: ['Pedro', 'Juan', 'María', 'Pedro y Juan'],
-    correctAnswer: 0
+    correctAnswer: 2
   },
   {
     id: 'log_015',
@@ -1282,6 +1423,53 @@ export const questionsPool = [
     correctAnswer: 0
   },
 
+  // Profundización lógica
+  {
+    id: 'log_028',
+    area: 'logica',
+    subarea: 'condicional',
+    difficulty: 1,
+    prompt: 'Si una figura es un cuadrado, entonces tiene cuatro lados. Esta figura tiene cuatro lados. ¿Podemos concluir que es un cuadrado?',
+    options: ['Sí', 'No, podría ser otra figura', 'Solo a veces', 'No hay información suficiente'],
+    correctAnswer: 1
+  },
+  {
+    id: 'log_029',
+    area: 'logica',
+    subarea: 'condicional',
+    difficulty: 2,
+    prompt: 'La proposición "Si llueve, la calle se moja" es falsa. ¿Qué tiene que ocurrir?',
+    options: ['No llueve y la calle está seca', 'Llueve y la calle no se moja', 'Llueve y la calle se moja', 'No llueve y la calle se moja'],
+    correctAnswer: 1
+  },
+  {
+    id: 'log_030',
+    area: 'logica',
+    subarea: 'condicional',
+    difficulty: 2,
+    prompt: 'Si (A o B) es verdadero y A es falso, ¿qué se concluye?',
+    options: ['B es verdadero', 'B es falso', 'A y B son verdaderos', 'No se puede saber'],
+    correctAnswer: 0
+  },
+  {
+    id: 'log_031',
+    area: 'logica',
+    subarea: 'condicional',
+    difficulty: 3,
+    prompt: 'P es verdadero si y solo si Q es verdadero. Si P es falso, entonces:',
+    options: ['Q es verdadero', 'Q es falso', 'Q es indeterminado', 'P y Q son verdaderos'],
+    correctAnswer: 1
+  },
+  {
+    id: 'log_032',
+    area: 'logica',
+    subarea: 'deduccion',
+    difficulty: 3,
+    prompt: 'En una isla, los caballeros siempre dicen la verdad y los bribones siempre mienten. A dice: "B es bribón". B dice: "C es bribón". C dice: "A y B son del mismo tipo". ¿Qué es B?',
+    options: ['Caballero', 'Bribón', 'No se puede determinar', 'Ambos'],
+    correctAnswer: 0
+  },
+
   // ============ CULTURA GENERAL ============
   // Ciencia
   {
@@ -1300,7 +1488,7 @@ export const questionsPool = [
     difficulty: 1,
     prompt: '¿Qué gas respiramos principalmente?',
     options: ['Oxígeno', 'Nitrógeno', 'Dióxido de carbono', 'Hidrógeno'],
-    correctAnswer: 0
+    correctAnswer: 1
   },
   {
     id: 'cult_003',
@@ -1334,7 +1522,7 @@ export const questionsPool = [
     area: 'cultura',
     subarea: 'ciencia',
     difficulty: 3,
-    prompt: '¿Qué scientist desarrolló la teoría de la relatividad?',
+    prompt: '¿Qué científico desarrolló la teoría de la relatividad?',
     options: ['Newton', 'Einstein', 'Hawking', 'Curie'],
     correctAnswer: 1
   },
@@ -1409,7 +1597,7 @@ export const questionsPool = [
     subarea: 'historia',
     difficulty: 2,
     prompt: '¿Quién fue el primer emperador de Roma?',
-    options: ['César', 'Augusto', 'Nerón', 'Octavio'],
+    options: ['Julio César', 'Augusto', 'Nerón', 'Tiberio'],
     correctAnswer: 1
   },
   {
@@ -1437,9 +1625,9 @@ export const questionsPool = [
     area: 'cultura',
     subarea: 'geografia',
     difficulty: 1,
-    prompt: '¿Cuál es el río más largo del mundo?',
+    prompt: '¿Cuál es el río más caudaloso del mundo?',
     options: ['Amazonas', 'Nilo', 'Misisipi', 'Yangtsé'],
-    correctAnswer: 1
+    correctAnswer: 0
   },
   {
     id: 'cult_018',
@@ -1464,8 +1652,8 @@ export const questionsPool = [
     area: 'cultura',
     subarea: 'geografia',
     difficulty: 3,
-    prompt: '¿Qué país tiene más habitantes? (India o China, antes de 2024)',
-    options: ['India', 'China', 'Tienen igual', 'Depende del año'],
+    prompt: '¿Qué país tiene más habitantes en América del Sur?',
+    options: ['Argentina', 'Brasil', 'Colombia', 'Perú'],
     correctAnswer: 1
   },
 
@@ -1531,7 +1719,7 @@ export const questionsPool = [
     area: 'cultura',
     subarea: 'general',
     difficulty: 2,
-    prompt: '¿Qué颜色 es la mezcla de azul y amarillo?',
+    prompt: '¿Qué color es la mezcla de azul y amarillo?',
     options: ['Naranja', 'Verde', 'Morado', 'Rojo'],
     correctAnswer: 1
   },
@@ -1651,6 +1839,52 @@ export const questionsPool = [
     prompt: '¿Qué significa "www" en Internet?',
     options: ['World Wide Web', 'Web World Wide', 'Wide Web World', 'Web Wireless World'],
     correctAnswer: 0
+  },
+  // Profundización en cultura general
+  {
+    id: 'cult_041',
+    area: 'cultura',
+    subarea: 'ciencia',
+    difficulty: 2,
+    prompt: '¿Qué órgano del sistema nervioso central coordina el equilibrio y la precisión de movimientos?',
+    options: ['Cerebelo', 'Hipocampo', 'Tálamo', 'Bulbo raquídeo'],
+    correctAnswer: 0
+  },
+  {
+    id: 'cult_042',
+    area: 'cultura',
+    subarea: 'historia',
+    difficulty: 3,
+    prompt: '¿En qué año comenzó la Primera Guerra Mundial?',
+    options: ['1912', '1914', '1916', '1918'],
+    correctAnswer: 1
+  },
+  {
+    id: 'cult_043',
+    area: 'cultura',
+    subarea: 'geografia',
+    difficulty: 2,
+    prompt: '¿Cuál es la capital de Canadá?',
+    options: ['Toronto', 'Montreal', 'Ottawa', 'Vancouver'],
+    correctAnswer: 2
+  },
+  {
+    id: 'cult_044',
+    area: 'cultura',
+    subarea: 'arte',
+    difficulty: 3,
+    prompt: '¿Quién compuso "Las Cuatro Estaciones"?',
+    options: ['Bach', 'Vivaldi', 'Mozart', 'Beethoven'],
+    correctAnswer: 1
+  },
+  {
+    id: 'cult_045',
+    area: 'cultura',
+    subarea: 'general',
+    difficulty: 3,
+    prompt: '¿Cuál es la unidad del SI para la presión?',
+    options: ['Watt', 'Newton', 'Pascal', 'Joule'],
+    correctAnswer: 2
   }
 ]
 

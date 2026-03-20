@@ -36,15 +36,39 @@ export function TestProvider({ children }) {
   const selectRandomQuestions = useCallback(() => {
     const areas = ['matematica', 'linguistica', 'espacial', 'logica', 'cultura']
     const selected = []
-    
+
+    const DIFFICULTY_TARGETS = {
+      1: 1,
+      2: 2,
+      3: 2
+    }
+
+    const shuffle = (list) => [...list].sort(() => Math.random() - 0.5)
+
     areas.forEach(area => {
       const areaQuestions = questionsPool.filter(q => q.area === area)
-      const shuffled = [...areaQuestions].sort(() => Math.random() - 0.5)
-      selected.push(...shuffled.slice(0, 5))
+      const byDifficulty = {
+        1: areaQuestions.filter(q => q.difficulty === 1),
+        2: areaQuestions.filter(q => q.difficulty === 2),
+        3: areaQuestions.filter(q => q.difficulty === 3)
+      }
+
+      const areaSelected = []
+      Object.entries(DIFFICULTY_TARGETS).forEach(([difficulty, count]) => {
+        const bucket = byDifficulty[difficulty] || []
+        areaSelected.push(...shuffle(bucket).slice(0, count))
+      })
+
+      if (areaSelected.length < 5) {
+        const usedIds = new Set(areaSelected.map(q => q.id))
+        const remaining = areaQuestions.filter(q => !usedIds.has(q.id))
+        areaSelected.push(...shuffle(remaining).slice(0, 5 - areaSelected.length))
+      }
+
+      selected.push(...areaSelected)
     })
-    
-    const shuffled = [...selected].sort(() => Math.random() - 0.5)
-    return shuffled
+
+    return shuffle(selected)
   }, [])
 
   const startTest = useCallback(async () => {
