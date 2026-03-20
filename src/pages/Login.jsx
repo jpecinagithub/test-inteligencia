@@ -7,8 +7,9 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [loadingGoogle, setLoadingGoogle] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const { login } = useAuth()
+  const { login, loginWithGoogle } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -30,6 +31,18 @@ export default function Login() {
     }
     
     setLoading(false)
+  }
+
+  const handleGoogle = async () => {
+    setError('')
+    setLoadingGoogle(true)
+    const result = await loginWithGoogle()
+    if (result.success) {
+      navigate('/dashboard')
+    } else {
+      setError(result.error)
+    }
+    setLoadingGoogle(false)
   }
 
   return (
@@ -78,8 +91,8 @@ export default function Login() {
                 </svg>
               </div>
               <div>
-                <div className="text-white font-medium">Solo 15 minutos</div>
-                <div className="text-white/60 text-sm">Test completo y profesional</div>
+                <div className="text-white font-medium">5 o 10 minutos</div>
+                <div className="text-white/60 text-sm">Elige modalidad amateur o profesional</div>
               </div>
             </div>
             <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-4">
@@ -130,7 +143,27 @@ export default function Login() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-4">
+            <button
+              type="button"
+              onClick={handleGoogle}
+              disabled={loadingGoogle}
+              className="w-full py-3.5 bg-white text-gray-900 font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="w-5 h-5 rounded-full bg-white text-gray-900 border border-gray-300 flex items-center justify-center text-xs font-bold">
+                G
+              </span>
+              {loadingGoogle ? 'Conectando...' : 'Continuar con Google'}
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="h-px bg-dark-600 flex-1"></div>
+              <span className="text-xs text-gray-500">o</span>
+              <div className="h-px bg-dark-600 flex-1"></div>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5 mt-4">
             {/* Email */}
             <div>
               <label className="block text-gray-300 text-sm font-medium mb-2">Correo electrónico</label>

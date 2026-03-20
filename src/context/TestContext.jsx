@@ -14,6 +14,7 @@ import {
 import { db } from '../services/firebase'
 import { questionsPool } from '../data/questions'
 import { explanations } from '../data/explanations.js'
+import { TEST_TYPES, DEFAULT_TEST_TYPE, TEST_AREAS } from '../data/testConfig'
 import { calculateScore } from '../services/scoring'
 import { useAuth } from './AuthContext'
 
@@ -29,25 +30,23 @@ export function TestProvider({ children }) {
   const [questions, setQuestions] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState({})
-  const [timeRemaining, setTimeRemaining] = useState(600)
+  const [currentTestConfig, setCurrentTestConfig] = useState(TEST_TYPES[DEFAULT_TEST_TYPE])
+  const [timeRemaining, setTimeRemaining] = useState(TEST_TYPES[DEFAULT_TEST_TYPE].duration)
   const [testStatus, setTestStatus] = useState('idle')
-  
-  const TEST_DURATION = 600
 
-  const selectRandomQuestions = useCallback(() => {
-    const areas = ['matematica', 'linguistica', 'espacial', 'logica', 'cultura']
+  const getTestConfig = useCallback((testType) => {
+    return TEST_TYPES[testType] || TEST_TYPES[DEFAULT_TEST_TYPE]
+  }, [])
+
+  const selectRandomQuestions = useCallback((testType = DEFAULT_TEST_TYPE) => {
+    const config = getTestConfig(testType)
     const selected = []
-
-    const DIFFICULTY_TARGETS = {
-      1: 1,
-      2: 2,
-      3: 2
-    }
 
     const shuffle = (list) => [...list].sort(() => Math.random() - 0.5)
 
-    areas.forEach(area => {
+    TEST_AREAS.forEach(area => {
       const areaQuestions = questionsPool.filter(q => q.area === area)
+      const perArea = config.questionsPerArea?.[area] || 0
       const byDifficulty = {
         1: areaQuestions.filter(q => q.difficulty === 1),
         2: areaQuestions.filter(q => q.difficulty === 2),
@@ -55,41 +54,51 @@ export function TestProvider({ children }) {
       }
 
       const areaSelected = []
-      Object.entries(DIFFICULTY_TARGETS).forEach(([difficulty, count]) => {
+      Object.entries(config.difficultyTargets || {}).forEach(([difficulty, count]) => {
         const bucket = byDifficulty[difficulty] || []
-        areaSelected.push(...shuffle(bucket).slice(0, count))
+        areaSelected.push(...shuffle(bucket).slice(0, Math.min(count, bucket.length)))
       })
 
-      if (areaSelected.length < 5) {
+      if (areaSelected.length < perArea) {
         const usedIds = new Set(areaSelected.map(q => q.id))
         const remaining = areaQuestions.filter(q => !usedIds.has(q.id))
-        areaSelected.push(...shuffle(remaining).slice(0, 5 - areaSelected.length))
+        areaSelected.push(...shuffle(remaining).slice(0, perArea - areaSelected.length))
+      }
+
+      if (areaSelected.length > perArea) {
+        areaSelected.splice(perArea)
       }
 
       selected.push(...areaSelected)
     })
 
     return shuffle(selected)
-  }, [])
+  }, [getTestConfig])
 
-  const startTest = useCallback(async () => {
+  const startTest = useCallback(async (testType = DEFAULT_TEST_TYPE) => {
     if (!user) return { success: false, error: 'Usuario no autenticado' }
     
     try {
-      const selectedQuestions = selectRandomQuestions()
-      const expiresAt = new Date(Date.now() + TEST_DURATION * 1000)
+      const config = getTestConfig(testType)
+      const selectedQuestions = selectRandomQuestions(testType)
+      const totalDuration = config.duration
+      const expiresAt = new Date(Date.now() + totalDuration * 1000)
       
       const attemptRef = await addDoc(collection(db, 'attempts'), {
         userId: user.uid,
         userEmail: user.email,
         userName: user.displayName,
+        testType,
+        totalDuration,
+        questionsPerArea: config.questionsPerArea,
+        totalQuestions: selectedQuestions.length,
         startedAt: serverTimestamp(),
         expiresAt: expiresAt.toISOString(),
         status: 'in_progress',
         questionIds: selectedQuestions.map(q => q.id),
         questionSnapshot: selectedQuestions,
         answers: {},
-        remainingTimeAtLastSync: TEST_DURATION,
+        remainingTimeAtLastSync: totalDuration,
         finalScore: null,
         areaScores: null,
         personalitySummary: null,
@@ -101,21 +110,24 @@ export function TestProvider({ children }) {
         id: attemptRef.id,
         expiresAt: expiresAt.toISOString(),
         questions: selectedQuestions,
-        status: 'in_progress'
+        status: 'in_progress',
+        testType,
+        totalDuration
       }
 
       setCurrentAttempt(attempt)
       setQuestions(selectedQuestions)
       setAnswers({})
       setCurrentIndex(0)
-      setTimeRemaining(TEST_DURATION)
+      setCurrentTestConfig(config)
+      setTimeRemaining(totalDuration)
       setTestStatus('active')
 
       return { success: true, attemptId: attemptRef.id }
     } catch (error) {
       return { success: false, error: error.message }
     }
-  }, [user, selectRandomQuestions])
+  }, [user, selectRandomQuestions, getTestConfig])
 
   const resumeTest = useCallback(async (attemptId) => {
     try {
@@ -146,16 +158,22 @@ export function TestProvider({ children }) {
       }
 
       const remainingSeconds = Math.floor((expiresAt - now) / 1000)
+      const testType = data.testType || DEFAULT_TEST_TYPE
+      const config = getTestConfig(testType)
+      const totalDuration = data.totalDuration || config.duration
       
       setCurrentAttempt({
         id: attemptId,
         expiresAt: data.expiresAt,
         questions: data.questionSnapshot,
-        status: 'in_progress'
+        status: 'in_progress',
+        testType,
+        totalDuration
       })
       setQuestions(data.questionSnapshot || [])
       setAnswers(data.answers || {})
       setCurrentIndex(0)
+      setCurrentTestConfig({ ...config, duration: totalDuration })
       setTimeRemaining(remainingSeconds)
       setTestStatus('active')
 
@@ -163,7 +181,7 @@ export function TestProvider({ children }) {
     } catch (error) {
       return { success: false, error: error.message }
     }
-  }, [user])
+  }, [user, getTestConfig])
 
   const saveAnswer = useCallback(async (questionId, answer) => {
     const newAnswers = { ...answers, [questionId]: answer }
@@ -193,6 +211,7 @@ export function TestProvider({ children }) {
     const userName = user?.displayName || 'Usuario'
     
     const result = calculateScore(questions, answers)
+    const totalDuration = currentAttempt?.totalDuration || currentTestConfig?.duration || TEST_TYPES[DEFAULT_TEST_TYPE].duration
     
     const cleanUndefined = (obj) => {
       if (obj === null || obj === undefined) return obj
@@ -229,7 +248,7 @@ export function TestProvider({ children }) {
         finalScore: result.totalScore,
         areaScores: result.areaScores,
         resultSummary: result.summary,
-        timeUsed: TEST_DURATION - timeRemaining,
+        timeUsed: totalDuration - timeRemaining,
         updatedAt: serverTimestamp()
       }
       
@@ -242,7 +261,7 @@ export function TestProvider({ children }) {
       return {
         ...result,
         attemptId,
-        timeUsed: TEST_DURATION - timeRemaining,
+        timeUsed: totalDuration - timeRemaining,
         questionDetails,
         userEmail,
         userName
@@ -251,7 +270,7 @@ export function TestProvider({ children }) {
       console.error('Error al finalizar test:', error)
       return { attemptId, error: error.message }
     }
-  }, [currentAttempt, questions, answers, timeRemaining, user])
+  }, [currentAttempt, currentTestConfig, questions, answers, timeRemaining, user])
 
   const getActiveAttempt = useCallback(async () => {
     if (!user) return null
@@ -331,7 +350,7 @@ export function TestProvider({ children }) {
     getActiveAttempt,
     getAttemptHistory,
     getAttemptById,
-    TEST_DURATION
+    currentTestConfig
   }
 
   return (

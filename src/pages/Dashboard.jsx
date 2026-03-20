@@ -97,7 +97,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <h2 className="text-xl font-semibold text-white">Test de Inteligencia</h2>
-                  <p className="text-gray-400 text-sm">10 minutos · 25 preguntas · 4 áreas</p>
+                  <p className="text-gray-400 text-sm">Amateur (5 min · 25 preguntas) o Profesional (10 min · 50 preguntas) · 5 áreas</p>
                 </div>
               </div>
 
@@ -119,6 +119,10 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 bg-alert rounded-full"></span>
                     <span className="text-gray-400">Lógica</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                    <span className="text-gray-400">Cultura</span>
                   </div>
                 </div>
               </div>
@@ -217,19 +221,19 @@ export default function Dashboard() {
                         {attempt.finalScore}%
                       </span>
                     </div>
-                    <div>
-                      <p className="text-white text-sm font-medium">
-                        {attempt.finishedAt?.toDate?.().toLocaleDateString('es-ES', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric'
-                        }) || 'Fecha no disponible'}
-                      </p>
-                      <p className="text-gray-500 text-xs">
-                        {attempt.timeUsed ? `${Math.floor(attempt.timeUsed / 60)}m ${attempt.timeUsed % 60}s` : '-'}
-                      </p>
-                    </div>
+                  <div>
+                    <p className="text-white text-sm font-medium">
+                      {attempt.finishedAt?.toDate?.().toLocaleDateString('es-ES', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric'
+                      }) || 'Fecha no disponible'}
+                    </p>
+                    <p className="text-gray-500 text-xs">
+                      {(attempt.testType === 'profesional' ? 'Profesional' : 'Amateur')} · {attempt.timeUsed ? `${Math.floor(attempt.timeUsed / 60)}m ${attempt.timeUsed % 60}s` : '-'}
+                    </p>
                   </div>
+                </div>
                   <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>

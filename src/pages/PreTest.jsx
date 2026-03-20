@@ -1,15 +1,20 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { useTest } from '../context/TestContext'
+import { TEST_TYPES, DEFAULT_TEST_TYPE } from '../data/testConfig'
 
 export default function PreTest() {
   const navigate = useNavigate()
   const { startTest } = useTest()
+  const [selectedType, setSelectedType] = useState(DEFAULT_TEST_TYPE)
+  const selectedConfig = TEST_TYPES[selectedType]
+  const minutesLabel = `${Math.round(selectedConfig.duration / 60)} minutos`
 
   const handleStart = async () => {
-    const result = await startTest()
+    const result = await startTest(selectedType)
     if (result.success) {
-      navigate('/test')
+      navigate(`/test?type=${selectedType}`)
     }
   }
 
@@ -28,6 +33,32 @@ export default function PreTest() {
           </div>
 
           <div className="bg-dark-700/50 rounded-xl p-6 mb-6">
+            <h2 className="text-lg font-semibold text-white mb-4">Selecciona modalidad</h2>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {Object.values(TEST_TYPES).map((testType) => (
+                <button
+                  key={testType.id}
+                  type="button"
+                  onClick={() => setSelectedType(testType.id)}
+                  className={`text-left rounded-lg border p-4 transition-colors ${
+                    selectedType === testType.id
+                      ? 'border-primary bg-primary/10'
+                      : 'border-dark-600 bg-dark-800/50 hover:border-primary/50'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-white font-semibold">{testType.label}</span>
+                    <span className="text-xs text-gray-400">{testType.description}</span>
+                  </div>
+                  <div className="text-sm text-gray-400">
+                    {testType.totalQuestions} preguntas · {Math.round(testType.duration / 60)} min
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-dark-700/50 rounded-xl p-6 mb-6">
             <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
               <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -39,7 +70,7 @@ export default function PreTest() {
                 <span className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-primary text-sm font-bold">1</span>
                 </span>
-                <span>El test tiene una duración de <strong className="text-white">10 minutos exactos</strong>.</span>
+                <span>El test tiene una duración de <strong className="text-white">{minutesLabel} exactos</strong>.</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -51,7 +82,7 @@ export default function PreTest() {
                 <span className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-primary text-sm font-bold">3</span>
                 </span>
-                <span>Responderás <strong className="text-white">25 preguntas</strong> de diferentes áreas cognitivas.</span>
+                <span>Responderás <strong className="text-white">{selectedConfig.totalQuestions} preguntas</strong> de diferentes áreas cognitivas.</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">

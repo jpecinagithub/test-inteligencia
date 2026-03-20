@@ -6,9 +6,11 @@ export default function Timer({ timeRemaining, totalTime }) {
   const minutes = Math.floor(timeRemaining / 60)
   const seconds = timeRemaining % 60
   
-  const percentage = (timeRemaining / totalTime) * 100
-  const isWarning = timeRemaining <= 300
-  const isCritical = timeRemaining <= 120
+  const safeTotal = totalTime > 0 ? totalTime : 1
+  const warningThreshold = Math.round(safeTotal * 0.3)
+  const criticalThreshold = Math.round(safeTotal * 0.1)
+  const isWarning = timeRemaining <= warningThreshold
+  const isCritical = timeRemaining <= criticalThreshold
 
   useEffect(() => {
     if (isCritical && timeRemaining > 0) {

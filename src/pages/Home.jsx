@@ -36,7 +36,7 @@ export default function Home() {
               <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              Test profesional en solo 10 minutos
+              Dos modalidades: Amateur 5 min · Profesional 10 min
             </div>
             
             <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold text-white mb-4 sm:mb-6 leading-tight">
@@ -45,7 +45,7 @@ export default function Home() {
             </h1>
             
             <p className="text-base sm:text-xl text-gray-400 mb-8 sm:mb-10 max-w-2xl mx-auto px-2">
-              Evalúa tu inteligencia en 4 áreas clave: matemática, lingüística, espacial y lógica. 
+              Evalúa tu inteligencia en 5 áreas clave: matemática, lingüística, espacial, lógica y cultura. 
               Un test diseñado científicamente que mide tu capacidad real bajo presión temporal.
             </p>
 
@@ -66,12 +66,13 @@ export default function Home() {
               )}
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-6">
               {[
                 { icon: '🧮', title: 'Matemática', desc: 'Razonamiento numérico' },
                 { icon: '📝', title: 'Lingüística', desc: 'Comprensión verbal' },
                 { icon: '👁️', title: 'Espacial', desc: 'Percepción visual' },
-                { icon: '🧠', title: 'Lógica', desc: 'Pensamiento crítico' }
+                { icon: '🧠', title: 'Lógica', desc: 'Pensamiento crítico' },
+                { icon: '📚', title: 'Cultura', desc: 'Conocimiento general' }
               ].map((area, i) => (
                 <div key={i} className="card text-center hover:border-primary/50 transition-colors p-3 sm:p-4">
                   <div className="text-3xl sm:text-4xl mb-2 sm:mb-3">{area.icon}</div>
@@ -105,8 +106,8 @@ export default function Home() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-white mb-1">10 Minutos</h3>
-                  <p className="text-sm sm:text-base text-gray-400">Test cronometrado bajo presión.</p>
+                  <h3 className="text-base sm:text-lg font-semibold text-white mb-1">5 o 10 Minutos</h3>
+                  <p className="text-sm sm:text-base text-gray-400">Elige la duración y nivel de exigencia.</p>
                 </div>
               </div>
               

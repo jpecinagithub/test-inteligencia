@@ -45,7 +45,8 @@ export default function Results() {
           attemptId: attempt.id,
           finishedAt: attempt.finishedAt?.toDate?.() || new Date(),
           userName: user?.displayName || 'Usuario',
-          questionDetails: attempt.questionDetails || []
+          questionDetails: attempt.questionDetails || [],
+          testType: attempt.testType || 'amateur'
         })
       } catch (error) {
         console.error('Error loading results:', error)
@@ -80,9 +81,10 @@ export default function Results() {
     )
   }
 
-  const { totalScore, iqEstimate, areaScores, summary, timeUsed, questionDetails } = results
+  const { totalScore, iqEstimate, areaScores, summary, timeUsed, questionDetails, testType } = results
   const minutes = Math.floor(timeUsed / 60)
   const seconds = timeUsed % 60
+  const testTypeLabel = testType === 'profesional' ? 'Profesional' : 'Amateur'
 
   const areaLabels = {
     matematica: { name: 'Matemática', icon: '🧮', color: 'secondary' },
@@ -132,6 +134,11 @@ export default function Results() {
               minute: '2-digit'
             })}
           </p>
+          <div className="mt-2">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary">
+              {testTypeLabel}
+            </span>
+          </div>
         </div>
 
         <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8">

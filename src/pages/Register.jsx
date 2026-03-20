@@ -9,8 +9,9 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [loadingGoogle, setLoadingGoogle] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const { register } = useAuth()
+  const { register, loginWithGoogle } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -49,6 +50,18 @@ export default function Register() {
     setLoading(false)
   }
 
+  const handleGoogle = async () => {
+    setError('')
+    setLoadingGoogle(true)
+    const result = await loginWithGoogle()
+    if (result.success) {
+      navigate('/dashboard')
+    } else {
+      setError(result.error)
+    }
+    setLoadingGoogle(false)
+  }
+
   return (
     <div className="min-h-screen bg-dark-900 flex">
       {/* Left Side - Branding */}
@@ -73,12 +86,12 @@ export default function Register() {
           </h1>
           <p className="text-lg text-white/80 leading-relaxed">
             Únete a miles de personas que ya han evaluado sus capacidades intelectuales 
-            con nuestro test profesional de 15 minutos.
+            con nuestras modalidades de 5 o 10 minutos.
           </p>
           
           <div className="mt-10 grid grid-cols-2 gap-4">
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-              <div className="text-3xl font-bold text-white">120+</div>
+              <div className="text-3xl font-bold text-white">200+</div>
               <div className="text-white/70 text-sm">Preguntas verificadas</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
@@ -86,7 +99,7 @@ export default function Register() {
               <div className="text-white/70 text-sm">Áreas cognitivas</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-              <div className="text-3xl font-bold text-white">15</div>
+              <div className="text-3xl font-bold text-white">5-10</div>
               <div className="text-white/70 text-sm">Minutos</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
@@ -130,7 +143,27 @@ export default function Register() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-4">
+            <button
+              type="button"
+              onClick={handleGoogle}
+              disabled={loadingGoogle}
+              className="w-full py-3.5 bg-white text-gray-900 font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="w-5 h-5 rounded-full bg-white text-gray-900 border border-gray-300 flex items-center justify-center text-xs font-bold">
+                G
+              </span>
+              {loadingGoogle ? 'Conectando...' : 'Registrarme con Google'}
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="h-px bg-dark-600 flex-1"></div>
+              <span className="text-xs text-gray-500">o</span>
+              <div className="h-px bg-dark-600 flex-1"></div>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5 mt-4">
             {/* Name */}
             <div>
               <label className="block text-gray-300 text-sm font-medium mb-2">Nombre completo</label>

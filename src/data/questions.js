@@ -482,8 +482,8 @@ const rawQuestionsPool = [
     area: 'linguistica',
     subarea: 'analogias',
     difficulty: 2,
-    prompt: 'Compositor es a música como arquitecto es a ___',
-    options: ['planos', 'edificios', 'construcción', 'diseño'],
+    prompt: 'Compositor es a partitura como arquitecto es a ___',
+    options: ['planos', 'ladrillos', 'hormigón', 'edificio'],
     correctAnswer: 0
   },
   {

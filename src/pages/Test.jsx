@@ -22,7 +22,7 @@ export default function Test() {
     startTest,
     resumeTest,
     finishTest,
-    TEST_DURATION
+    currentTestConfig
   } = useTest()
 
   const [loading, setLoading] = useState(true)
@@ -31,11 +31,12 @@ export default function Test() {
   useEffect(() => {
     const initTest = async () => {
       const resumeId = searchParams.get('resume')
+      const typeParam = searchParams.get('type')
       
       if (resumeId) {
         const result = await resumeTest(resumeId)
         if (!result.success) {
-          const startResult = await startTest()
+          const startResult = await startTest(typeParam)
           if (startResult.success) {
             navigate('/test')
           } else {
@@ -43,7 +44,7 @@ export default function Test() {
           }
         }
       } else if (!currentAttempt) {
-        const result = await startTest()
+        const result = await startTest(typeParam)
         if (!result.success) {
           navigate('/dashboard')
         }
@@ -136,7 +137,7 @@ export default function Test() {
             </div>
           </div>
           
-          <Timer timeRemaining={timeRemaining} totalTime={TEST_DURATION} />
+          <Timer timeRemaining={timeRemaining} totalTime={currentAttempt?.totalDuration || currentTestConfig?.duration || 0} />
           
           <div className="text-sm text-gray-400">
             <span className="text-white font-semibold">{answeredCount}</span>/{questions.length}

@@ -50,7 +50,7 @@ export const explanations = {
   "ling_003": "Mariposa es insecto; águila es ave.",
   "ling_004": "Dedo es parte de mano; hoja (de árbol) es parte de árbol.",
   "ling_005": "Oídos sirven para oír.",
-  "ling_006": "Compositor produce música; arquitecto produce planos.",
+  "ling_006": "Relación creador -> plano: compositor produce partitura; arquitecto produce planos.",
   "ling_007": "Capítulo es parte de un libro; escena es parte de una obra.",
   "ling_008": "Guante se usa en la mano; calcetín en el pie.",
   "ling_009": "Ala es de ave; aleta es de pez.",
