@@ -55,36 +55,34 @@ export function AuthProvider({ children }) {
   }
 
   const withTimeout = (promise, ms) => {
-    return new Promise((resolve) => {
-      let settled = false
-      const timer = setTimeout(() => {
-        if (!settled) resolve({ timedOut: true })
-      }, ms)
-
-      promise
-        .then((value) => {
-          if (settled) return
-          settled = true
-          clearTimeout(timer)
-          resolve({ timedOut: false, value })
-        })
-        .catch((error) => {
-          if (settled) return
-          settled = true
-          clearTimeout(timer)
-          resolve({ timedOut: false, error })
-        })
-    })
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('timeout')), ms)
+      )
+    ])
   }
 
   useEffect(() => {
+    let isMounted = true
+    
     const checkRedirect = async () => {
-      const result = await withTimeout(getRedirectResult(auth), 3000)
-      if (result?.error) {
-        console.error('Error en redirect de Google:', result.error)
-        setAuthError(getErrorMessage(result.error.code))
+      try {
+        const result = await withTimeout(getRedirectResult(auth), 5000)
+        if (!isMounted) return
+        if (result?.error) {
+          console.error('Error en redirect de Google:', result.error)
+          setAuthError(getErrorMessage(result.error.code))
+        }
+      } catch (error) {
+        if (!isMounted) return
+        if (error.message === 'timeout') {
+          console.log('Redirect timeout, esperando estado de auth...')
+        } else {
+          console.error('Error en redirect:', error)
+        }
       }
-      setRedirectChecked(true)
+      if (isMounted) setRedirectChecked(true)
     }
 
     checkRedirect()
@@ -117,12 +115,15 @@ export function AuthProvider({ children }) {
           console.warn('No se pudo actualizar el usuario en Firestore:', error)
         })
       } else {
-        setUser(null)
+        if (isMounted) setUser(null)
       }
-      setAuthReady(true)
+      if (isMounted) setAuthReady(true)
     })
 
-    return () => unsubscribe()
+    return () => {
+      isMounted = false
+      unsubscribe()
+    }
   }, [])
 
   useEffect(() => {
@@ -168,35 +169,32 @@ export function AuthProvider({ children }) {
       setAuthError('')
       const provider = new GoogleAuthProvider()
       provider.setCustomParameters({ prompt: 'select_account' })
-      if (shouldUseRedirect()) {
-        await signInWithRedirect(auth, provider)
-        return { success: true, redirect: true }
-      }
+      
+      // Siempre intenta popup primero, incluso en móvil
       const result = await signInWithPopup(auth, provider)
       return { success: true, user: result.user }
     } catch (error) {
-      if (
-        error.code === 'auth/operation-not-supported-in-this-environment' ||
-        error.code === 'auth/web-storage-unsupported'
-      ) {
-        setAuthError(getErrorMessage(error.code))
-        return { success: false, error: getErrorMessage(error.code) }
-      }
-      if (
-        error.code === 'auth/popup-blocked' ||
-        error.code === 'auth/popup-closed-by-user' ||
-        error.code === 'auth/cancelled-popup-request'
-      ) {
+      console.error('Google login error:', error.code, error.message)
+      
+      if (error.code === 'auth/popup-blocked') {
+        // Popup bloqueado, intenta redirect como fallback
         try {
           const provider = new GoogleAuthProvider()
           provider.setCustomParameters({ prompt: 'select_account' })
           await signInWithRedirect(auth, provider)
           return { success: true, redirect: true }
         } catch (redirectError) {
+          console.error('Redirect fallback failed:', redirectError)
           setAuthError(getErrorMessage(redirectError.code))
           return { success: false, error: getErrorMessage(redirectError.code) }
         }
       }
+      
+      if (error.code === 'auth/web-storage-unsupported') {
+        setAuthError('Tu navegador no permite iniciar sesión. Usa Chrome o Safari.')
+        return { success: false, error: getErrorMessage(error.code) }
+      }
+      
       setAuthError(getErrorMessage(error.code))
       return { success: false, error: getErrorMessage(error.code) }
     }
