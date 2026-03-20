@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
@@ -9,7 +9,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [loadingGoogle, setLoadingGoogle] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const { login, loginWithGoogle } = useAuth()
+  const { login, loginWithGoogle, user } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -32,6 +32,12 @@ export default function Login() {
     
     setLoading(false)
   }
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard')
+    }
+  }, [user, navigate])
 
   const handleGoogle = async () => {
     setError('')

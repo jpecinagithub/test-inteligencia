@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
@@ -11,7 +11,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false)
   const [loadingGoogle, setLoadingGoogle] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const { register, loginWithGoogle } = useAuth()
+  const { register, loginWithGoogle, user } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -49,6 +49,12 @@ export default function Register() {
     
     setLoading(false)
   }
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard')
+    }
+  }, [user, navigate])
 
   const handleGoogle = async () => {
     setError('')
