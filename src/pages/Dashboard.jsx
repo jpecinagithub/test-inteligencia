@@ -53,7 +53,20 @@ export default function Dashboard() {
             <span className="font-bold text-white">TestInteligencia</span>
           </Link>
           <div className="flex items-center gap-4">
-            <span className="text-gray-300 hidden sm:block">Hola, {user?.displayName}</span>
+            <div className="hidden sm:flex items-center gap-2">
+              {user?.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt="Avatar"
+                  className="w-8 h-8 rounded-full border border-dark-600"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-dark-700 border border-dark-600 flex items-center justify-center text-xs font-semibold text-gray-300">
+                  {(user?.displayName || user?.email || '?').slice(0, 1).toUpperCase()}
+                </div>
+              )}
+              <span className="text-gray-300">Hola, {user?.displayName}</span>
+            </div>
             <button
               onClick={handleLogout}
               disabled={loggingOut}

@@ -37,10 +37,10 @@ export default function Login() {
     setError('')
     setLoadingGoogle(true)
     const result = await loginWithGoogle()
-    if (result.success) {
+    if (result.success && !result.redirect) {
       navigate('/dashboard')
     } else {
-      setError(result.error)
+      if (!result.success) setError(result.error)
     }
     setLoadingGoogle(false)
   }

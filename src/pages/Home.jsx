@@ -19,7 +19,22 @@ export default function Home() {
             </div>
             <span className="text-lg sm:text-xl font-bold text-white">TestInteligencia</span>
           </div>
-          <nav className="flex gap-2 sm:gap-4">
+          <nav className="flex items-center gap-2 sm:gap-4">
+            {user && (
+              <div className="hidden sm:flex items-center gap-2">
+                {user?.photoURL ? (
+                  <img
+                    src={user.photoURL}
+                    alt="Avatar"
+                    className="w-8 h-8 rounded-full border border-dark-600"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-dark-800 border border-dark-600 flex items-center justify-center text-xs font-semibold text-gray-300">
+                    {(user?.displayName || user?.email || '?').slice(0, 1).toUpperCase()}
+                  </div>
+                )}
+              </div>
+            )}
             {user ? (
               <Link to="/dashboard" className="btn-primary text-sm sm:text-base px-3 sm:px-4 py-2">Mi Panel</Link>
             ) : (

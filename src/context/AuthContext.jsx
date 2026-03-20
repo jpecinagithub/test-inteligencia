@@ -7,7 +7,9 @@ import {
   signOut,
   updateProfile,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult
 } from 'firebase/auth'
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db } from '../services/firebase'
@@ -21,8 +23,26 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [redirectChecked, setRedirectChecked] = useState(false)
+
+  const isMobileDevice = () => {
+    if (typeof window === 'undefined') return false
+    return /Android|iPhone|iPad|iPod|Windows Phone|Mobi/i.test(window.navigator.userAgent)
+  }
 
   useEffect(() => {
+    const checkRedirect = async () => {
+      try {
+        await getRedirectResult(auth)
+      } catch (error) {
+        console.error('Error en redirect de Google:', error)
+      } finally {
+        setRedirectChecked(true)
+      }
+    }
+
+    checkRedirect()
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const providers = (firebaseUser.providerData || [])
@@ -51,11 +71,11 @@ export function AuthProvider({ children }) {
       } else {
         setUser(null)
       }
-      setLoading(false)
+      if (redirectChecked) setLoading(false)
     })
 
     return () => unsubscribe()
-  }, [])
+  }, [redirectChecked])
 
   const login = async (email, password) => {
     try {
@@ -91,9 +111,27 @@ export function AuthProvider({ children }) {
     try {
       const provider = new GoogleAuthProvider()
       provider.setCustomParameters({ prompt: 'select_account' })
+      if (isMobileDevice()) {
+        await signInWithRedirect(auth, provider)
+        return { success: true, redirect: true }
+      }
       const result = await signInWithPopup(auth, provider)
       return { success: true, user: result.user }
     } catch (error) {
+      if (
+        error.code === 'auth/popup-blocked' ||
+        error.code === 'auth/popup-closed-by-user' ||
+        error.code === 'auth/cancelled-popup-request'
+      ) {
+        try {
+          const provider = new GoogleAuthProvider()
+          provider.setCustomParameters({ prompt: 'select_account' })
+          await signInWithRedirect(auth, provider)
+          return { success: true, redirect: true }
+        } catch (redirectError) {
+          return { success: false, error: getErrorMessage(redirectError.code) }
+        }
+      }
       return { success: false, error: getErrorMessage(error.code) }
     }
   }
