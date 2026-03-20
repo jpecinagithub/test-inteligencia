@@ -11,12 +11,13 @@ export default function Register() {
   const [loading, setLoading] = useState(false)
   const [loadingGoogle, setLoadingGoogle] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const { register, loginWithGoogle, user } = useAuth()
+  const { register, loginWithGoogle, user, authError, clearAuthError } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    clearAuthError()
 
     if (!name || !email || !password || !confirmPassword) {
       setError('Por favor completa todos los campos')
@@ -56,8 +57,13 @@ export default function Register() {
     }
   }, [user, navigate])
 
+  useEffect(() => {
+    if (authError) setError(authError)
+  }, [authError])
+
   const handleGoogle = async () => {
     setError('')
+    clearAuthError()
     setLoadingGoogle(true)
     const result = await loginWithGoogle()
     if (result.success && !result.redirect) {

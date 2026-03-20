@@ -24,26 +24,72 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [redirectChecked, setRedirectChecked] = useState(false)
+  const [authReady, setAuthReady] = useState(false)
+  const [authError, setAuthError] = useState('')
 
   const isMobileDevice = () => {
     if (typeof window === 'undefined') return false
-    return /Android|iPhone|iPad|iPod|Windows Phone|Mobi/i.test(window.navigator.userAgent)
+    const ua = window.navigator.userAgent || ''
+    const uaMobile = window.navigator.userAgentData?.mobile
+    const coarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches
+    return Boolean(
+      uaMobile ||
+      coarsePointer ||
+      /Android|iPhone|iPad|iPod|Windows Phone|Mobi/i.test(ua)
+    )
+  }
+
+  const isInAppBrowser = () => {
+    if (typeof window === 'undefined') return false
+    const ua = window.navigator.userAgent || ''
+    return /FBAN|FBAV|Instagram|Line|Twitter|LinkedInApp|WhatsApp|Snapchat|TikTok|Pinterest|wv|WebView/i.test(ua)
+  }
+
+  const isStandalone = () => {
+    if (typeof window === 'undefined') return false
+    return window.matchMedia && window.matchMedia('(display-mode: standalone)').matches
+  }
+
+  const shouldUseRedirect = () => {
+    return isMobileDevice() || isInAppBrowser() || isStandalone()
+  }
+
+  const withTimeout = (promise, ms) => {
+    return new Promise((resolve) => {
+      let settled = false
+      const timer = setTimeout(() => {
+        if (!settled) resolve({ timedOut: true })
+      }, ms)
+
+      promise
+        .then((value) => {
+          if (settled) return
+          settled = true
+          clearTimeout(timer)
+          resolve({ timedOut: false, value })
+        })
+        .catch((error) => {
+          if (settled) return
+          settled = true
+          clearTimeout(timer)
+          resolve({ timedOut: false, error })
+        })
+    })
   }
 
   useEffect(() => {
     const checkRedirect = async () => {
-      try {
-        await getRedirectResult(auth)
-      } catch (error) {
-        console.error('Error en redirect de Google:', error)
-      } finally {
-        setRedirectChecked(true)
+      const result = await withTimeout(getRedirectResult(auth), 3000)
+      if (result?.error) {
+        console.error('Error en redirect de Google:', result.error)
+        setAuthError(getErrorMessage(result.error.code))
       }
+      setRedirectChecked(true)
     }
 
     checkRedirect()
 
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         const providers = (firebaseUser.providerData || [])
           .map((provider) => provider.providerId)
@@ -57,8 +103,8 @@ export function AuthProvider({ children }) {
           photoURL: firebaseUser.photoURL || null,
           providers
         })
-        
-        await setDoc(doc(db, 'users', firebaseUser.uid), {
+
+        setDoc(doc(db, 'users', firebaseUser.uid), {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
           displayName,
@@ -67,18 +113,27 @@ export function AuthProvider({ children }) {
           authProvider: providers[0] || 'password',
           lastLoginAt: serverTimestamp(),
           updatedAt: serverTimestamp()
-        }, { merge: true })
+        }, { merge: true }).catch((error) => {
+          console.warn('No se pudo actualizar el usuario en Firestore:', error)
+        })
       } else {
         setUser(null)
       }
-      if (redirectChecked) setLoading(false)
+      setAuthReady(true)
     })
 
     return () => unsubscribe()
-  }, [redirectChecked])
+  }, [])
+
+  useEffect(() => {
+    if (redirectChecked && authReady) {
+      setLoading(false)
+    }
+  }, [redirectChecked, authReady])
 
   const login = async (email, password) => {
     try {
+      setAuthError('')
       const result = await signInWithEmailAndPassword(auth, email, password)
       return { success: true, user: result.user }
     } catch (error) {
@@ -88,6 +143,7 @@ export function AuthProvider({ children }) {
 
   const register = async (email, password, name) => {
     try {
+      setAuthError('')
       const result = await createUserWithEmailAndPassword(auth, email, password)
       await updateProfile(result.user, { displayName: name })
       
@@ -109,15 +165,23 @@ export function AuthProvider({ children }) {
 
   const loginWithGoogle = async () => {
     try {
+      setAuthError('')
       const provider = new GoogleAuthProvider()
       provider.setCustomParameters({ prompt: 'select_account' })
-      if (isMobileDevice()) {
+      if (shouldUseRedirect()) {
         await signInWithRedirect(auth, provider)
         return { success: true, redirect: true }
       }
       const result = await signInWithPopup(auth, provider)
       return { success: true, user: result.user }
     } catch (error) {
+      if (
+        error.code === 'auth/operation-not-supported-in-this-environment' ||
+        error.code === 'auth/web-storage-unsupported'
+      ) {
+        setAuthError(getErrorMessage(error.code))
+        return { success: false, error: getErrorMessage(error.code) }
+      }
       if (
         error.code === 'auth/popup-blocked' ||
         error.code === 'auth/popup-closed-by-user' ||
@@ -129,9 +193,11 @@ export function AuthProvider({ children }) {
           await signInWithRedirect(auth, provider)
           return { success: true, redirect: true }
         } catch (redirectError) {
+          setAuthError(getErrorMessage(redirectError.code))
           return { success: false, error: getErrorMessage(redirectError.code) }
         }
       }
+      setAuthError(getErrorMessage(error.code))
       return { success: false, error: getErrorMessage(error.code) }
     }
   }
@@ -166,14 +232,22 @@ export function AuthProvider({ children }) {
       'auth/invalid-credential': 'Credenciales inválidas',
       'auth/popup-closed-by-user': 'Se cerró la ventana de Google antes de completar',
       'auth/popup-blocked': 'El navegador bloqueó la ventana emergente. Permítela e intenta de nuevo',
-      'auth/cancelled-popup-request': 'La solicitud de Google fue cancelada'
+      'auth/cancelled-popup-request': 'La solicitud de Google fue cancelada',
+      'auth/unauthorized-domain': 'El dominio no está autorizado en Firebase Auth. Añádelo en la consola.',
+      'auth/operation-not-supported-in-this-environment': 'Tu navegador no permite iniciar sesión con Google. Abre el enlace en Chrome o Safari.',
+      'auth/web-storage-unsupported': 'El navegador bloquea el almacenamiento. Abre el enlace en Chrome o Safari.',
+      'auth/redirect-cancelled-by-user': 'Se canceló el inicio de sesión con Google.'
     }
     return errors[code] || 'Ha ocurrido un error. Intenta de nuevo'
   }
 
+  const clearAuthError = () => setAuthError('')
+
   const value = {
     user,
     loading,
+    authError,
+    clearAuthError,
     login,
     loginWithGoogle,
     register,
