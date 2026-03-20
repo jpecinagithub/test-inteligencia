@@ -1,4 +1,6 @@
-export const questionsPool = [
+import { explanations } from './explanations.js'
+
+const rawQuestionsPool = [
   // ============ MATEMÁTICA ============
   // Series numéricas
   {
@@ -292,7 +294,7 @@ export const questionsPool = [
     subarea: 'problemas',
     difficulty: 3,
     prompt: 'Tres amigos comparten una cuenta de $150. Si uno paga el doble que los otros dos (que pagan igual), ¿cuánto paga cada uno?',
-    options: ['$30 y $60', '$25 y $50', '$20 y $40', '$35 y $70'],
+    options: ['$37.50, $37.50 y $75', '$30, $60 y $60', '$40, $40 y $70', '$25, $25 y $100'],
     correctAnswer: 0
   },
 
@@ -322,7 +324,7 @@ export const questionsPool = [
     difficulty: 2,
     prompt: '¿Qué es mayor: 2/3 de 60 o 3/4 de 56?',
     options: ['2/3 de 60', '3/4 de 56', 'Son iguales', 'No se puede saber'],
-    correctAnswer: 0
+    correctAnswer: 1
   },
   {
     id: 'math_036',
@@ -440,15 +442,6 @@ export const questionsPool = [
   // ============ LINGÜÍSTICA ============
   // Analogías
   {
-    id: 'ling_001',
-    area: 'linguistica',
-    subarea: 'analogias',
-    difficulty: 1,
-    prompt: 'Perro es a camada como gato es a ___',
-    options: ['manada', 'camada', 'niñada', 'piara'],
-    correctAnswer: 1
-  },
-  {
     id: 'ling_002',
     area: 'linguistica',
     subarea: 'analogias',
@@ -490,8 +483,8 @@ export const questionsPool = [
     subarea: 'analogias',
     difficulty: 2,
     prompt: 'Compositor es a música como arquitecto es a ___',
-    options: ['construcción', 'diseño', 'edificios', 'planos'],
-    correctAnswer: 1
+    options: ['planos', 'edificios', 'construcción', 'diseño'],
+    correctAnswer: 0
   },
   {
     id: 'ling_007',
@@ -499,8 +492,8 @@ export const questionsPool = [
     subarea: 'analogias',
     difficulty: 3,
     prompt: 'Capítulo es a libro como escena es a ___',
-    options: ['teatro', 'película', 'actriz', 'obra'],
-    correctAnswer: 1
+    options: ['obra', 'película', 'teatro', 'actriz'],
+    correctAnswer: 0
   },
   {
     id: 'ling_008',
@@ -516,9 +509,9 @@ export const questionsPool = [
     area: 'linguistica',
     subarea: 'analogias',
     difficulty: 3,
-    prompt: 'Sedimento es a río como polvo es a ___',
-    options: ['aire', 'casa', 'viento', 'torre'],
-    correctAnswer: 2
+    prompt: 'Ala es a ave como aleta es a ___',
+    options: ['pez', 'mamífero', 'reptil', 'insecto'],
+    correctAnswer: 0
   },
 
   // Sinónimos
@@ -684,9 +677,9 @@ export const questionsPool = [
     area: 'linguistica',
     subarea: 'intrusa',
     difficulty: 1,
-    prompt: '¿Cuál NO es un color primario? Rojo, azul, verde, amarillo',
+    prompt: '¿Cuál NO es un color primario en el modelo RGB? Rojo, azul, verde, amarillo',
     options: ['Rojo', 'Azul', 'Verde', 'Amarillo'],
-    correctAnswer: 2
+    correctAnswer: 3
   },
   {
     id: 'ling_029',
@@ -884,24 +877,15 @@ export const questionsPool = [
     difficulty: 2,
     prompt: 'Encuentra el patrón: ▲○●▲○●▲○ ___',
     options: ['●', '▲', '○', '■'],
-    correctAnswer: 1
-  },
-  {
-    id: 'esp_004',
-    area: 'espacial',
-    subarea: 'secuencias',
-    difficulty: 1,
-    prompt: '¿Qué figura falta? ●○●○●●○●○ ___',
-    options: ['●', '○', '●○', '●'],
-    correctAnswer: 1
+    correctAnswer: 0
   },
   {
     id: 'esp_005',
     area: 'espacial',
     subarea: 'secuencias',
     difficulty: 2,
-    prompt: 'Sigue el patrón: ▲▲△▲▲△△▲▲△ ___',
-    options: ['△', '▲', '●', '■'],
+    prompt: 'Sigue el patrón: ▲▲△ ▲▲△△ ▲▲△△△ ___',
+    options: ['▲', '△', '▲▲', '△△'],
     correctAnswer: 0
   },
   {
@@ -920,7 +904,7 @@ export const questionsPool = [
     difficulty: 2,
     prompt: 'Observa el patrón: ▲○●▲○●▲○●. ¿Qué viene después?',
     options: ['●', '▲', '○', '■'],
-    correctAnswer: 0
+    correctAnswer: 1
   },
 
   // Rotación de letras
@@ -938,9 +922,9 @@ export const questionsPool = [
     area: 'espacial',
     subarea: 'rotacion',
     difficulty: 1,
-    prompt: 'Si volteas horizontalmente la letra "d", ¿qué letra obtienes?',
-    options: ['b', 'p', 'q', 'Ninguna'],
-    correctAnswer: 2
+    prompt: 'Si reflejas la letra "d" en un espejo vertical (izquierda-derecha), ¿qué letra obtienes?',
+    options: ['b', 'p', 'q', 'd'],
+    correctAnswer: 0
   },
   {
     id: 'esp_010',
@@ -956,9 +940,9 @@ export const questionsPool = [
     area: 'espacial',
     subarea: 'rotacion',
     difficulty: 2,
-    prompt: 'Si rotas una "b" 90° en sentido horario, ¿qué letra obtienes?',
-    options: ['p', 'd', 'q', 'b'],
-    correctAnswer: 0
+    prompt: 'Si una flecha apunta al norte y la giras 90° a la derecha, ¿hacia dónde apunta?',
+    options: ['Norte', 'Este', 'Sur', 'Oeste'],
+    correctAnswer: 1
   },
   {
     id: 'esp_012',
@@ -1023,7 +1007,7 @@ export const questionsPool = [
     area: 'espacial',
     subarea: 'contar',
     difficulty: 2,
-    prompt: '¿Cuántos triángulos ves en una pirámide de 3 niveles? (△△△)',
+    prompt: '¿Cuántos triángulos hay en una pirámide de 3 niveles (1 arriba, 2 en medio, 3 abajo)?',
     options: ['3', '4', '5', '6'],
     correctAnswer: 3
   },
@@ -1072,7 +1056,7 @@ export const questionsPool = [
     difficulty: 2,
     prompt: 'Si unes 3 cubos en línea, ¿cuántas caras visibles tiene el objeto en total?',
     options: ['14', '16', '18', '20'],
-    correctAnswer: 2
+    correctAnswer: 0
   },
   {
     id: 'esp_024',
@@ -1119,7 +1103,7 @@ export const questionsPool = [
     difficulty: 2,
     prompt: 'Si A es la primera letra y D es la cuarta, ¿qué letra está entre B y C?',
     options: ['B', 'C', 'B o C', 'No hay letra'],
-    correctAnswer: 0
+    correctAnswer: 3
   },
 
   // Profundización espacial
@@ -1250,8 +1234,8 @@ export const questionsPool = [
     area: 'logica',
     subarea: 'condicional',
     difficulty: 1,
-    prompt: 'Si hace sol, salgo. No está haciendo sol. ¿Salgo?',
-    options: ['Sí', 'No', 'Depende', 'A veces'],
+    prompt: 'Si hace sol, salgo. No salgo. ¿Qué se puede concluir?',
+    options: ['Hace sol', 'No hace sol', 'A veces salgo', 'No se puede concluir'],
     correctAnswer: 1
   },
   {
@@ -1259,18 +1243,18 @@ export const questionsPool = [
     area: 'logica',
     subarea: 'condicional',
     difficulty: 2,
-    prompt: 'Si tengo hambre Y tengo dinero, como. Tengo hambre pero no tengo dinero. ¿Qué pasa?',
-    options: ['Como', 'No como', 'Pido prestado', 'Depende del plato'],
-    correctAnswer: 1
+    prompt: 'Si tengo hambre Y tengo dinero, como. Tengo hambre y tengo dinero. ¿Qué se concluye?',
+    options: ['Como', 'No como', 'Depende', 'No se puede concluir'],
+    correctAnswer: 0
   },
   {
     id: 'log_011',
     area: 'logica',
     subarea: 'condicional',
     difficulty: 2,
-    prompt: 'Si corro, me canso. Si descanso, no me canso. Estoy cansado. ¿Qué hice?',
-    options: ['Corrí', 'Descansé', 'Ambas cosas', 'No sé'],
-    correctAnswer: 0
+    prompt: 'Si corro, me canso. No me cansé. ¿Qué se concluye?',
+    options: ['Corrí', 'No corrí', 'Corrí y descansé', 'No se puede concluir'],
+    correctAnswer: 1
   },
   {
     id: 'log_012',
@@ -1324,7 +1308,7 @@ export const questionsPool = [
     area: 'logica',
     subarea: 'deduccion',
     difficulty: 3,
-    prompt: 'Hay 3 cajas mal etiquetadas. Una dice "Oro", otra "Plata", otra "Oro o Plata". Si abres una y ves oro, ¿qué sabes?',
+    prompt: 'Hay 3 cajas mal etiquetadas. Una dice "Oro", otra "Plata", otra "Oro o Plata". Si abres la caja etiquetada "Oro o Plata" y ves oro, ¿qué sabes?',
     options: ['La caja "Oro" tiene plata', 'La caja "Oro" tiene oro', 'Ambas cajas tienen lo mismo', 'No se puede saber'],
     correctAnswer: 0
   },
@@ -1344,9 +1328,9 @@ export const questionsPool = [
     area: 'logica',
     subarea: 'clasificacion',
     difficulty: 1,
-    prompt: '¿Cuál número no pertenece? 2, 5, 7, 9, 11, 14',
-    options: ['2', '9', '11', '14'],
-    correctAnswer: 3
+    prompt: '¿Cuál número no pertenece? 2, 4, 8, 16, 18, 32',
+    options: ['18', '8', '16', '32'],
+    correctAnswer: 0
   },
   {
     id: 'log_020',
@@ -1402,16 +1386,16 @@ export const questionsPool = [
     difficulty: 2,
     prompt: 'A es igual a B. B es mayor que C. C es igual a D. ¿Qué relación hay entre A y D?',
     options: ['A > D', 'A = D', 'A < D', 'No se puede determinar'],
-    correctAnswer: 1
+    correctAnswer: 0
   },
   {
     id: 'log_026',
     area: 'logica',
     subarea: 'patrones',
     difficulty: 3,
-    prompt: 'Si 2+2=4, 3+3=18, 4+4=32, ¿cuánto es 5+5?',
-    options: ['50', '55', '60', '70'],
-    correctAnswer: 0
+    prompt: 'Si 2+2=4, 3+3=9, 4+4=16, ¿cuánto es 5+5?',
+    options: ['20', '24', '25', '30'],
+    correctAnswer: 2
   },
   {
     id: 'log_027',
@@ -1746,7 +1730,7 @@ export const questionsPool = [
     area: 'cultura',
     subarea: 'general',
     difficulty: 3,
-    prompt: '¿Cuántos bytes hay en un kilobyte?',
+    prompt: 'En informática (base 2), ¿cuántos bytes hay en 1 KiB?',
     options: ['100', '512', '1000', '1024'],
     correctAnswer: 3
   },
@@ -1755,7 +1739,7 @@ export const questionsPool = [
     area: 'cultura',
     subarea: 'general',
     difficulty: 3,
-    prompt: '¿Qué evento ocurre cada 4 años en el fútbol?',
+    prompt: '¿Qué torneo de selecciones se celebra cada 4 años y es el más importante del fútbol?',
     options: ['Copa América', 'Eurocopa', 'Copa del Mundo', 'Champions League'],
     correctAnswer: 2
   },
@@ -1887,6 +1871,11 @@ export const questionsPool = [
     correctAnswer: 2
   }
 ]
+
+export const questionsPool = rawQuestionsPool.map((question) => ({
+  ...question,
+  explanation: explanations[question.id] || question.explanation
+}))
 
 export const TEST_CONFIG = {
   totalDuration: 600,

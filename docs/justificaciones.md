@@ -1,0 +1,211 @@
+# Justificaciones de respuestas
+
+## Matemática
+- math_001: 2, 4, 6, 8, ___ -> 10. Serie de pares sumando 2.
+- math_002: 3, 6, 11, 18, 27, ___ -> 38. Diferencias +3, +5, +7, +9; sigue +11.
+- math_003: 1, 1, 2, 3, 5, 8, ___ -> 13. Serie Fibonacci (suma de los dos anteriores).
+- math_004: 1, 4, 9, 16, ___, 36 -> 25. Cuadrados perfectos.
+- math_005: 5, 10, 20, 40, ___ -> 80. Se duplica.
+- math_006: 100, 90, 80, 70, ___ -> 60. Resta 10.
+- math_007: 2, 6, 12, 20, 30, ___ -> 42. Diferencias 4, 6, 8, 10; sigue 12.
+- math_008: 1, 11, 21, 1211, 111221, ___ -> 312211. Serie "look-and-say".
+- math_009: 3, 9, 27, 81, ___ -> 243. Multiplica por 3.
+- math_010: 2, 4, 8, 16, 24, 32 -> 24 rompe el patrón. Debería ser 32 tras 16.
+- math_011: 15 + 27 -> 42. Suma directa.
+- math_012: 144 ÷ 12 -> 12. División directa.
+- math_013: 156 - 89 -> 67. Resta directa.
+- math_014: 7×8 + 12÷4 -> 59. Primero multiplicación y división, luego suma.
+- math_015: 2³ + 3² -> 17. 8 + 9.
+- math_016: 3x + 7 = 22 -> x=5.
+- math_017: Doble de 15 -> 30.
+- math_018: (15×4)/(3+2) -> 12.
+- math_019: 3×$40 con 15% de descuento -> $102. 120×0.85.
+- math_020: x/5 + 3 = 12 -> x=45.
+- math_021: 25% de 80 -> 20.
+- math_022: 10% de 250 -> 25.
+- math_023: $200 sube 20% y baja 20% -> $192. 200×1.2×0.8.
+- math_024: De $80 a $60 -> 25% de descuento.
+- math_025: 15 es el 30% de 50.
+- math_026: De $80 a $100 -> 25% de aumento.
+- math_027: 4×12=48 jornadas; 48/6=8 días.
+- math_028: 80 km/h × 2.5 h -> 200 km.
+- math_029: $240 es 80% -> $300.
+- math_030: 8 L/100 km × 350 km -> 28 L.
+- math_031: 100 días ≡ 2 (mod 7); lunes +2 = miércoles.
+- math_032: x+x+2x=150 -> x=37.5; pagos 37.5, 37.5, 75.
+- math_033: 5/6 (≈0.83) > 3/4 (0.75).
+- math_034: Orden ascendente: 0.25, 0.5, 0.6, 0.75.
+- math_035: 2/3 de 60=40; 3/4 de 56=42 -> gana 3/4 de 56.
+- math_036: √x=8 -> x=64.
+- math_037: π² > 2π porque π>2.
+- math_038: Perímetro 2(8+5)=26 cm.
+- math_039: 5 ángulos internos => 5 lados.
+- math_040: Área 64π -> r²=64 -> r=8.
+- math_041: Triángulo 3-4-5 -> hipotenusa 5.
+- math_042: Total de cuadrados en 8x8: 1²+...+8²=204.
+- math_043: Dos series alternadas; sigue 10.
+- math_044: 2x-5=3x/2 -> x=10.
+- math_045: 1.15×0.9=1.035; 207/1.035=200.
+- math_046: Diagonales en n-gono: n(n-3)/2 = 35.
+- math_047: 1/6+1/4=5/12; tiempo 12/5=2 h 24 min.
+
+## Lingüística
+- ling_002: Pluma es a escribir como pincel es a pintar (herramienta-acción).
+- ling_003: Mariposa es insecto; águila es ave.
+- ling_004: Dedo es parte de mano; hoja (de árbol) es parte de árbol.
+- ling_005: Oídos sirven para oír.
+- ling_006: Compositor produce música; arquitecto produce planos.
+- ling_007: Capítulo es parte de un libro; escena es parte de una obra.
+- ling_008: Guante se usa en la mano; calcetín en el pie.
+- ling_009: Ala es de ave; aleta es de pez.
+- ling_011: "Alegre" es sinónimo de contento.
+- ling_012: "Grande" es sinónimo de enorme.
+- ling_013: "Abrumador" equivale a avasallador.
+- ling_014: "Sutil" equivale a delicado.
+- ling_015: "Efímero" equivale a breve.
+- ling_016: "Obsoleto" equivale a anticuado.
+- ling_017: "Perenne" equivale a eterno.
+- ling_018: "Audaz" equivale a osado.
+- ling_019: Antónimo de oscuro -> claro.
+- ling_020: Antónimo de rápido -> lento.
+- ling_021: Antónimo de frágil -> resistente.
+- ling_022: Antónimo de explícito -> ambiguo.
+- ling_023: Antónimo de sosiego -> turbación.
+- ling_024: Antónimo de efímero -> permanente.
+- ling_025: "Escritorio" no es fruta.
+- ling_026: "Jirafa" no es animal marino.
+- ling_027: "Árbol" no es cuerpo de agua.
+- ling_028: En RGB los primarios son rojo, verde y azul; amarillo no lo es.
+- ling_029: "Martillo" no es instrumento musical.
+- ling_030: "Madera" no es metal.
+- ling_031: Photoshop no es lenguaje de programación.
+- ling_032: El dicho alude a la prudencia del sabio.
+- ling_033: Enseña que conviene enfocarse en pocas tareas.
+- ling_034: Las apariencias engañan.
+- ling_035: Significa estar en la misma situación.
+- ling_036: Sugiere que el esfuerzo/planificación temprana trae beneficios.
+- ling_037: Indica que es mejor actuar tarde que no hacerlo.
+- ling_038: Implica que el silencio puede interpretarse como consentimiento.
+- ling_039: Libro -> lectura; televisión -> entretenimiento.
+- ling_040: Cielo -> azul; pasto -> verde.
+- ling_041: Pluma -> escritor; pincel -> pintor.
+- ling_042: Semilla -> árbol; huevo -> ave.
+- ling_043: "Parco" en el habla es lacónico.
+- ling_044: Antónimo de benévolo -> cruel.
+- ling_045: Un epígrafe es un texto al inicio de un libro.
+- ling_046: "Dar por sentado" es asumir como cierto sin comprobar.
+
+## Espacial
+- esp_001: Patrón repetido □ ○ △; sigue △.
+- esp_002: Secuencia 1-2-3; sigue 4.
+- esp_003: Patrón repetido ▲○●; sigue ●.
+- esp_005: Bloques ▲▲ con △ crecientes; después de ▲▲△△△ empieza ▲.
+- esp_006: Aumenta la cantidad de ■ y luego □; sigue □.
+- esp_007: Patrón repetido ▲○●; sigue ▲.
+- esp_008: La N rotada 180° conserva su forma en mayúscula.
+- esp_009: Reflejo horizontal de "d" produce "b".
+- esp_010: ↑ a → son 90°.
+- esp_011: Norte girado 90° a la derecha apunta al este.
+- esp_012: En un dado estándar, el 3 es opuesto al 4.
+- esp_013: La A tiene simetría vertical.
+- esp_014: La Z no tiene simetría de reflexión.
+- esp_015: Un cuadrado tiene 4 ejes de simetría.
+- esp_016: Un triángulo isósceles tiene 1 eje de simetría.
+- esp_017: Un triángulo equilátero tiene 3 ejes de simetría.
+- esp_018: Pirámide 1+2+3 = 6 triángulos.
+- esp_019: En 2x2 hay 4 pequeños + 1 grande = 5.
+- esp_020: Total de cuadrados en 8x8 es 204.
+- esp_021: Cada pliegue duplica capas; 2³=8.
+- esp_022: Vista superior de un cubo es un cuadrado.
+- esp_023: Prisma 3x1x1 tiene 14 caras visibles.
+- esp_024: Un dado estándar tiene 6 caras.
+- esp_025: Proporción de sombras 6/8 = 9/12; altura 9 m.
+- esp_026: Área n² con n=4 -> 16.
+- esp_027: "SEIS" tiene 4 letras.
+- esp_028: Entre B y C no hay letra.
+- esp_029: Desde una esquina se ven 3 caras.
+- esp_030: 1²+2²+3²+4² = 30.
+- esp_031: Un cubo tiene 4 diagonales espaciales.
+- esp_032: Cubitos con 2 caras pintadas: 12(n-2)=24.
+- esp_033: Rectángulos en 5x5: (15)² = 225.
+
+## Lógica
+- log_001: "Algunos felinos son negros" no permite concluir nada sobre gatos.
+- log_002: Si ningún reptil vuela y las serpientes son reptiles, entonces no vuelan.
+- log_003: Si todos los psicólogos son empáticos, María (psicóloga) es empática.
+- log_004: Si ningún mamífero es ave y el pingüino es ave, no es mamífero.
+- log_005: Algunos estudiantes son atletas y todos los atletas entrenan -> algunos estudiantes entrenan.
+- log_006: Si todos los A son B y ningún B es C, entonces ningún A es C.
+- log_007: Modus ponens: llueve -> me quedo.
+- log_008: Modus tollens: no aprobé -> no estudié.
+- log_009: Modus tollens: no salgo -> no hace sol.
+- log_010: Con hambre y dinero, se cumple la condición -> como.
+- log_011: Si corro entonces me canso; no me cansé -> no corrí.
+- log_012: Transitivdad: A>B y B>C -> A>C.
+- log_013: Carla es la menor.
+- log_014: María está más al sur.
+- log_015: Carlos está primero.
+- log_016: Verde es el más oscuro.
+- log_017: Al abrir "Oro o Plata" y ver oro, esa caja es "Oro"; la caja "Oro" tiene plata.
+- log_018: 3 hijos en total; Ana tiene 2 -> Bea tiene 1.
+- log_019: 18 no es potencia de 2.
+- log_020: 9 no es primo.
+- log_021: Todos son múltiplos de 3; todos encajan.
+- log_022: "Prisión" no pertenece al ámbito académico.
+- log_023: HTML es lenguaje de marcado, no de programación.
+- log_024: No hay regla para "nublado"; no se puede concluir.
+- log_025: A=B, B>C y C=D -> A>D.
+- log_026: Regla a+a = a²; 5+5=25.
+- log_027: Si A⊂B y B⊂C, entonces A⊂C.
+- log_028: Tener 4 lados no implica ser cuadrado.
+- log_029: Una condicional es falsa solo si antecedente verdadero y consecuente falso.
+- log_030: Si (A o B) es verdadero y A es falso, entonces B es verdadero.
+- log_031: P ↔ Q; si P es falso, Q es falso.
+- log_032: La única asignación consistente hace a B caballero.
+
+## Cultura general
+- cult_001: Júpiter es el planeta más grande.
+- cult_002: El aire es mayoritariamente nitrógeno (~78%).
+- cult_003: El cuerpo humano adulto tiene 206 huesos.
+- cult_004: El corazón bombea la sangre.
+- cult_005: El agua es H2O.
+- cult_006: Einstein formuló la relatividad.
+- cult_007: El número atómico 79 es el oro (Au).
+- cult_008: La luz viaja a ~300,000 km/s.
+- cult_009: La Torre Eiffel está en Francia.
+- cult_010: La Mona Lisa fue pintada por Leonardo da Vinci.
+- cult_011: El hombre llegó a la Luna en 1969.
+- cult_012: Machu Picchu fue construido por los incas.
+- cult_013: La Segunda Guerra Mundial terminó en 1945.
+- cult_014: Augusto fue el primer emperador de Roma.
+- cult_015: La frase se atribuye a Sócrates.
+- cult_016: El océano más grande es el Pacífico.
+- cult_017: El río más caudaloso es el Amazonas.
+- cult_018: Europa tiene alrededor de 44-50 países; la opción más cercana es 45.
+- cult_019: La capital de Australia es Canberra.
+- cult_020: Brasil es el país más poblado de Sudamérica.
+- cult_021: "Don Quijote" fue escrito por Cervantes.
+- cult_022: La guitarra tiene 6 cuerdas.
+- cult_023: "Guernica" es del siglo XX (1937).
+- cult_024: "La Noche Estrellada" es un óleo sobre lienzo.
+- cult_025: Una hora tiene 60 minutos.
+- cult_026: Un año bisiesto tiene 366 días.
+- cult_027: Azul + amarillo = verde.
+- cult_028: El arcoíris se enseña con 7 colores.
+- cult_029: Cada cara de un dado es un cuadrado.
+- cult_030: 1 KiB = 1024 bytes (base 2).
+- cult_031: La Copa del Mundo se celebra cada 4 años.
+- cult_032: El metal más abundante en la corteza es el aluminio.
+- cult_033: La penicilina fue descubierta por Fleming.
+- cult_034: Egipto está principalmente en África.
+- cult_035: Un equipo de fútbol tiene 11 jugadores en el campo.
+- cult_036: XII representa 12.
+- cult_037: La piel produce vitamina D con el sol.
+- cult_038: La capital de Mongolia es Ulan Bator.
+- cult_039: El electrón tiene carga negativa.
+- cult_040: "www" significa World Wide Web.
+- cult_041: El cerebelo coordina equilibrio y precisión.
+- cult_042: La Primera Guerra Mundial comenzó en 1914.
+- cult_043: La capital de Canadá es Ottawa.
+- cult_044: "Las Cuatro Estaciones" es de Vivaldi.
+- cult_045: La unidad SI de presión es el pascal.

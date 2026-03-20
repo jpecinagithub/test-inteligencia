@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '../services/firebase'
 import { questionsPool } from '../data/questions'
+import { explanations } from '../data/explanations.js'
 import { calculateScore } from '../services/scoring'
 import { useAuth } from './AuthContext'
 
@@ -217,7 +218,7 @@ export function TestProvider({ children }) {
         correctAnswer: q.correctAnswer,
         userAnswer: answers[q.id],
         isCorrect: answers[q.id] === q.correctAnswer,
-        explanation: q.explanation || 'No hay explicación disponible.'
+        explanation: q.explanation || explanations[q.id] || 'No hay explicación disponible.'
       }))
       
       const updateData = {
