@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTest } from '../context/TestContext'
 import Timer from '../components/test/Timer'
@@ -27,8 +27,12 @@ export default function Test() {
 
   const [loading, setLoading] = useState(true)
   const [finishing, setFinishing] = useState(false)
+  const hasInitialized = useRef(false)
 
   useEffect(() => {
+    if (hasInitialized.current) return
+    hasInitialized.current = true
+
     const initTest = async () => {
       const resumeId = searchParams.get('resume')
       const typeParam = searchParams.get('type')
@@ -53,7 +57,7 @@ export default function Test() {
     }
 
     initTest()
-  }, [])
+  }, [searchParams, resumeTest, startTest, navigate, currentAttempt])
 
   useEffect(() => {
     if (testStatus !== 'active') return
@@ -70,7 +74,7 @@ export default function Test() {
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [testStatus])
+  }, [testStatus, handleFinish, setTimeRemaining])
 
   const handleFinish = useCallback(async () => {
     if (finishing) return

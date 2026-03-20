@@ -56,7 +56,7 @@ export function calculateScore(questions, answers) {
 
 function generateSummary(areaScores, totalScore) {
   const topAreas = Object.entries(areaScores)
-    .filter(([key, value]) => value.total > 0)
+    .filter(([, value]) => value.total > 0)
     .sort((a, b) => b[1].percentage - a[1].percentage)
 
   const weakestAreas = [...topAreas].reverse().slice(0, 2)
@@ -119,7 +119,7 @@ export function generateResultsEmailHTML(results, userName) {
   const seconds = timeUsed % 60
   
   const areaBars = Object.entries(areaScores)
-    .filter(([key, value]) => value.total > 0)
+    .filter(([, value]) => value.total > 0)
     .map(([area, scores]) => `
       <div style="margin: 10px 0;">
         <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">

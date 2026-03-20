@@ -153,13 +153,6 @@ export default function Results() {
     return 'text-alert'
   }
 
-  const getScoreBg = (percentage) => {
-    if (percentage >= 80) return 'bg-secondary/20'
-    if (percentage >= 60) return 'bg-primary/20'
-    if (percentage >= 40) return 'bg-warning/20'
-    return 'bg-alert/20'
-  }
-
   return (
     <div className="min-h-screen bg-dark-900">
       <header className="bg-dark-800 border-b border-dark-700">
@@ -222,7 +215,7 @@ export default function Results() {
           
           <div className="space-y-3 sm:space-y-4">
             {Object.entries(areaScores)
-              .filter(([key, value]) => value && value.total > 0)
+              .filter(([, value]) => value && value.total > 0)
               .map(([area, scores]) => {
                 const info = areaLabels[area] || { name: area, icon: '📊', color: 'gray' }
                 return (

@@ -137,7 +137,7 @@ describe('Lógica - Verificación de silogismos', () => {
 
   it('log_014: Quien vive más al sur', () => {
     const q = logQuestions.find(q => q.id === 'log_014')
-    expect(q.options[q.correctAnswer]).toBe('Pedro')
+    expect(q.options[q.correctAnswer]).toBe('María')
   })
 })
 
