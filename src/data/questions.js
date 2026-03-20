@@ -884,7 +884,7 @@ const rawQuestionsPool = [
     area: 'espacial',
     subarea: 'secuencias',
     difficulty: 2,
-    prompt: 'Sigue el patrón: ▲▲△ ▲▲△△ ▲▲△△△ ___',
+    prompt: 'Sigue el patrón y elige el siguiente símbolo: ▲▲△ ▲▲△△ ▲▲△△△ ___',
     options: ['▲', '△', '▲▲', '△△'],
     correctAnswer: 0
   },
@@ -893,8 +893,8 @@ const rawQuestionsPool = [
     area: 'espacial',
     subarea: 'secuencias',
     difficulty: 2,
-    prompt: '¿Qué número completa el patrón? ■□■■□■■■□■■■ ___',
-    options: ['□', '■', '▪', 'Es irregular'],
+    prompt: 'Completa la secuencia: ■□, ■■□, ■■■□, ___',
+    options: ['■■■■□', '■■□', '□■■■', '■■■■'],
     correctAnswer: 0
   },
   {

@@ -99,8 +99,8 @@
 - esp_001: Patrón repetido □ ○ △; sigue △.
 - esp_002: Secuencia 1-2-3; sigue 4.
 - esp_003: Patrón repetido ▲○●; sigue ●.
-- esp_005: Bloques ▲▲ con △ crecientes; después de ▲▲△△△ empieza ▲.
-- esp_006: Aumenta la cantidad de ■ y luego □; sigue □.
+- esp_005: Bloques ▲▲ con △ crecientes; el siguiente símbolo tras ▲▲△△△ es ▲.
+- esp_006: Se incrementa en 1 la cantidad de ■ antes del □; sigue ■■■■□.
 - esp_007: Patrón repetido ▲○●; sigue ▲.
 - esp_008: La N rotada 180° conserva su forma en mayúscula.
 - esp_009: Reflejo horizontal de "d" produce "b".
