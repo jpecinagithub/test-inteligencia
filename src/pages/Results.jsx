@@ -14,6 +14,10 @@ export default function Results() {
   const [results, setResults] = useState(null)
   const [sendingEmail, setSendingEmail] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
+  const [showEmailForm, setShowEmailForm] = useState(false)
+  const [targetEmail, setTargetEmail] = useState('')
+  const [emailError, setEmailError] = useState('')
+  const [sendStatus, setSendStatus] = useState({ state: 'idle', message: '', email: '', id: '' })
   const [showDetails, setShowDetails] = useState(false)
 
   useEffect(() => {
@@ -36,7 +40,7 @@ export default function Results() {
           return
         }
 
-        setResults({
+        const finalResults = {
           totalScore: attempt.finalScore,
           iqEstimate: Math.round(75 + (attempt.finalScore * 0.5)),
           areaScores: attempt.areaScores,
@@ -47,7 +51,10 @@ export default function Results() {
           userName: user?.displayName || 'Usuario',
           questionDetails: attempt.questionDetails || [],
           testType: attempt.testType || 'amateur'
-        })
+        }
+
+        setResults(finalResults)
+        setTargetEmail((user?.email || '').trim())
       } catch (error) {
         console.error('Error loading results:', error)
         navigate('/dashboard')
@@ -59,11 +66,56 @@ export default function Results() {
     loadResults()
   }, [attemptId, user, getAttemptById, navigate])
 
+  const handleOpenEmailForm = () => {
+    setShowEmailForm(true)
+    setSendStatus({ state: 'idle', message: '', email: '', id: '' })
+    setEmailError('')
+  }
+
+  const handleCloseEmailForm = () => {
+    setShowEmailForm(false)
+    setEmailError('')
+    setSendStatus({ state: 'idle', message: '', email: '', id: '' })
+  }
+
+  const isValidEmail = (value) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+  }
+
   const handleSendEmail = async () => {
+    const email = targetEmail.trim()
+    setEmailError('')
+    setSendStatus({ state: 'idle', message: '', email: '', id: '' })
+
+    if (!email) {
+      setEmailError('Escribe un correo válido.')
+      return
+    }
+
+    if (!isValidEmail(email)) {
+      setEmailError('El correo no tiene un formato válido.')
+      return
+    }
+
     setSendingEmail(true)
-    const result = await sendResultsByEmail(user.email, results)
+    setSendStatus({ state: 'sending', message: 'Enviando...', email, id: '' })
+    const result = await sendResultsByEmail(email, results)
     if (result.success) {
       setEmailSent(true)
+      setShowEmailForm(false)
+      setSendStatus({
+        state: 'success',
+        message: result.data?.message || 'Email enviado correctamente.',
+        email,
+        id: result.data?.id || ''
+      })
+    } else {
+      setSendStatus({
+        state: 'error',
+        message: result.error || 'No se pudo enviar el email.',
+        email,
+        id: ''
+      })
     }
     setSendingEmail(false)
   }
@@ -330,21 +382,13 @@ export default function Results() {
 
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <button
-            onClick={handleSendEmail}
-            disabled={sendingEmail || emailSent}
+            onClick={handleOpenEmailForm}
+            disabled={emailSent}
             className={`flex-1 btn-primary flex items-center justify-center gap-2 py-3 sm:py-4 text-sm sm:text-base ${
               emailSent ? 'bg-secondary hover:bg-secondary' : ''
             }`}
           >
-            {sendingEmail ? (
-              <>
-                <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-                Enviando...
-              </>
-            ) : emailSent ? (
+            {emailSent ? (
               <>
                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -368,6 +412,69 @@ export default function Results() {
             Repetir Test
           </Link>
         </div>
+
+        {showEmailForm && (
+          <div className="mt-4 card p-3 sm:p-5">
+            <div className="flex flex-col sm:flex-row sm:items-end gap-3">
+              <div className="flex-1">
+                <label className="block text-gray-300 text-sm font-medium mb-2">
+                  Enviar resultados a
+                </label>
+                <input
+                  type="email"
+                  value={targetEmail}
+                  onChange={(e) => setTargetEmail(e.target.value)}
+                  className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/25 transition-all"
+                  placeholder="correo@ejemplo.com"
+                  autoComplete="email"
+                />
+                {emailError && (
+                  <p className="text-xs text-alert mt-2">{emailError}</p>
+                )}
+              </div>
+              <div className="flex gap-2 sm:gap-3">
+                <button
+                  onClick={handleSendEmail}
+                  disabled={sendingEmail}
+                  className="btn-primary px-4 py-3 text-sm sm:text-base"
+                >
+                  {sendingEmail ? 'Enviando...' : 'Enviar ahora'}
+                </button>
+                <button
+                  onClick={handleCloseEmailForm}
+                  className="btn-secondary px-4 py-3 text-sm sm:text-base"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {sendStatus.state !== 'idle' && (
+          <div
+            className={`mt-3 text-xs sm:text-sm rounded-lg border px-4 py-3 ${
+              sendStatus.state === 'success'
+                ? 'border-secondary/40 bg-secondary/10 text-secondary'
+                : sendStatus.state === 'error'
+                  ? 'border-alert/40 bg-alert/10 text-alert'
+                  : 'border-primary/40 bg-primary/10 text-primary'
+            }`}
+          >
+            <div className="font-semibold">
+              {sendStatus.state === 'success' && 'Email enviado'}
+              {sendStatus.state === 'error' && 'Error al enviar'}
+              {sendStatus.state === 'sending' && 'Enviando email'}
+            </div>
+            <div className="mt-1">{sendStatus.message}</div>
+            {sendStatus.email && (
+              <div className="mt-1 text-gray-400">Destino: {sendStatus.email}</div>
+            )}
+            {sendStatus.id && (
+              <div className="mt-1 text-gray-400">ID de envío: {sendStatus.id}</div>
+            )}
+          </div>
+        )}
       </main>
 
       <footer className="py-6 sm:py-8 px-4 border-t border-dark-700 mt-4 sm:mt-8">

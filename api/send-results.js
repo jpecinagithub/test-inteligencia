@@ -7,7 +7,8 @@ function formatAreaName(area) {
     matematica: 'Matemática',
     linguistica: 'Lingüística',
     espacial: 'Espacial',
-    logica: 'Lógica'
+    logica: 'Lógica',
+    cultura: 'Cultura'
   }
   return names[area] || area
 }
@@ -20,12 +21,27 @@ function getScoreColor(percentage) {
 }
 
 function generateResultsEmailHTML(results, userName) {
-  const { totalScore, iqEstimate, areaScores, personalitySummary, summary, timeUsed, questionDetails } = results
-  
+  const {
+    totalScore = 0,
+    iqEstimate = 0,
+    areaScores = {},
+    personalitySummary,
+    summary,
+    timeUsed = 0,
+    questionDetails
+  } = results || {}
+
+  const safeSummary = {
+    overall: summary?.overall || 'Resultado',
+    message: summary?.message || 'Resultados generados correctamente.',
+    strengths: Array.isArray(summary?.strengths) ? summary.strengths : [],
+    improvements: Array.isArray(summary?.improvements) ? summary.improvements : []
+  }
+
   const minutes = Math.floor(timeUsed / 60)
   const seconds = timeUsed % 60
   
-  const areaBars = Object.entries(areaScores)
+  const areaBars = Object.entries(areaScores || {})
     .filter(([key]) => key !== 'personalidad')
     .map(([area, scores]) => `
       <div style="margin: 10px 0;">
@@ -39,7 +55,7 @@ function generateResultsEmailHTML(results, userName) {
       </div>
     `).join('')
 
-  const questionsHTML = questionDetails && questionDetails.length > 0 
+  const questionsHTML = Array.isArray(questionDetails) && questionDetails.length > 0 
     ? questionDetails.map((q, index) => {
         const userAnswerIndex = q.userAnswer
         const correctAnswerIndex = q.correctAnswer
@@ -120,33 +136,35 @@ function generateResultsEmailHTML(results, userName) {
           ${areaBars}
           
           <div style="margin-top: 30px; padding: 20px; background: #0f172a; border-radius: 12px; border-left: 4px solid #3b82f6;">
-            <h3 style="color: #fff; margin: 0 0 10px 0; font-size: 16px;">${summary.overall}</h3>
-            <p style="color: #94a3b8; margin: 0; font-size: 14px; line-height: 1.6;">${summary.message}</p>
+            <h3 style="color: #fff; margin: 0 0 10px 0; font-size: 16px;">${safeSummary.overall}</h3>
+            <p style="color: #94a3b8; margin: 0; font-size: 14px; line-height: 1.6;">${safeSummary.message}</p>
           </div>
           
-          ${summary.strengths.length > 0 ? `
+          ${safeSummary.strengths.length > 0 ? `
             <div style="margin-top: 20px;">
               <h4 style="color: #10b981; margin: 0 0 10px 0; font-size: 14px;">Fortalezas</h4>
-              <p style="color: #94a3b8; margin: 0; font-size: 14px;">${summary.strengths.join(', ')}</p>
+              <p style="color: #94a3b8; margin: 0; font-size: 14px;">${safeSummary.strengths.join(', ')}</p>
             </div>
           ` : ''}
           
-          ${summary.improvements.length > 0 ? `
+          ${safeSummary.improvements.length > 0 ? `
             <div style="margin-top: 20px;">
               <h4 style="color: #f59e0b; margin: 0 0 10px 0; font-size: 14px;">Áreas de Mejora</h4>
-              <p style="color: #94a3b8; margin: 0; font-size: 14px;">${summary.improvements.join(', ')}</p>
+              <p style="color: #94a3b8; margin: 0; font-size: 14px;">${safeSummary.improvements.join(', ')}</p>
             </div>
           ` : ''}
           
-          <div style="margin-top: 30px; padding: 20px; background: #0f172a; border-radius: 12px;">
-            <h4 style="color: #fff; margin: 0 0 10px 0; font-size: 14px;">Perfil de Personalidad</h4>
-            <p style="color: #94a3b8; margin: 0; font-size: 14px; line-height: 1.8;">
-              • Orientación analítica: <span style="color: #fff;">${personalitySummary.analytical}</span><br>
-              • Persistencia: <span style="color: #fff;">${personalitySummary.persistence}</span><br>
-              • Tolerancia a presión: <span style="color: #fff;">${personalitySummary.pressureTolerance}</span><br>
-              • Impulsividad: <span style="color: #fff;">${personalitySummary.impulsivity}</span>
-            </p>
-          </div>
+          ${personalitySummary ? `
+            <div style="margin-top: 30px; padding: 20px; background: #0f172a; border-radius: 12px;">
+              <h4 style="color: #fff; margin: 0 0 10px 0; font-size: 14px;">Perfil de Personalidad</h4>
+              <p style="color: #94a3b8; margin: 0; font-size: 14px; line-height: 1.8;">
+                • Orientación analítica: <span style="color: #fff;">${personalitySummary.analytical || 'N/D'}</span><br>
+                • Persistencia: <span style="color: #fff;">${personalitySummary.persistence || 'N/D'}</span><br>
+                • Tolerancia a presión: <span style="color: #fff;">${personalitySummary.pressureTolerance || 'N/D'}</span><br>
+                • Impulsividad: <span style="color: #fff;">${personalitySummary.impulsivity || 'N/D'}</span>
+              </p>
+            </div>
+          ` : ''}
           
           <div style="margin-top: 40px;">
             <h2 style="color: #fff; font-size: 20px; margin: 0 0 20px 0; border-bottom: 1px solid #334155; padding-bottom: 10px;">
@@ -179,6 +197,10 @@ export default async function handler(req, res) {
   }
 
   try {
+    if (!process.env.RESEND_API_KEY) {
+      return res.status(500).json({ error: 'Falta configurar RESEND_API_KEY en el servidor' })
+    }
+
     const { email, results } = req.body
 
     if (!email || !results) {
@@ -200,7 +222,12 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Error al enviar el email' })
     }
 
-    res.json({ success: true, message: 'Email enviado correctamente' })
+    res.json({
+      success: true,
+      message: 'Email enviado correctamente',
+      email,
+      id: data?.id || null
+    })
   } catch (error) {
     console.error('Error sending email:', error)
     res.status(500).json({ error: 'Error interno del servidor' })
